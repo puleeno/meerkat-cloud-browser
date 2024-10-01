@@ -4,4 +4,7 @@ version = "2024.9.0"
 edition = "2021"
 
 [dependencies]
-pyo3 = { version = "0.22.3" }
+http-body-util = "0.1.2"
+hyper = { version = "1.4.1", features = ["server", "http1", "http2", "client"]}
+hyper-util = { version = "0.1.9", features = ["full"] }
+tokio = { version = "1.40.0", features = ["full"] }
