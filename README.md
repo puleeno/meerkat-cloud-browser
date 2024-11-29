@@ -1,10 +1,10 @@
 # Meerkat Cloud Browser
-Control Server Browser via Web API
+Control Browser Server via Web API
 
 # Backend
 
 - Web Server: https://github.com/hansonkd/puff#puff--asyncio
-- Proxy Server: develop new proxy can stream video data written in Rust
+- Proxy Server: Develop new proxy that can stream video data written in Rust
 -
 # Web app: FastAPI
 
@@ -14,11 +14,11 @@ Control Server Browser via Web API
 
 # Database:
    - Main DB: Postgres
-   - Cache: Consider to use SlateDB - https://docs.rs/slatedb/latest/slatedb/
+   - Cache: Consider using SlateDB - https://docs.rs/slatedb/latest/slatedb/
 
 # Batch:
    - Use Python RQ to handle batch runner and execute Firefox ESR to crawl data
-   - Browser;: Firefox ESR to support login and cookies
+   - Browser: Firefox ESR to support login and cookies
 
 # Drivers
 - geckordp: https://jpramosi.github.io/geckordp/index.html
