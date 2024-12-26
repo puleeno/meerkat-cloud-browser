@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+# Install Firefox and dependencies
+RUN apt-get update && apt-get install -y \
+    firefox-esr \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY python_api/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY python_api/app ./app
+
+# Create directory for logs
+RUN mkdir -p /app/logs
+
+# Expose port
+EXPOSE 8000
+
+# Run the application with hypercorn
+CMD ["hypercorn", "app.main:app", "--bind", "0.0.0.0:8000"] 

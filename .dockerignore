@@ -1,0 +1,6 @@
+**/target
+**/__pycache__
+**/logs
+.git
+.gitignore
+README.md

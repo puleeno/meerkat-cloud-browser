@@ -1,0 +1,31 @@
+services:
+  python_api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.python
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - FIREFOX_PATH=/usr/bin/firefox
+      - LOG_LEVEL=INFO
+    networks:
+      - browser_network
+
+  rust_proxy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rust
+    ports:
+      - "3000:3000"
+    environment:
+      - PYTHON_API_URL=http://python_api:8000
+    depends_on:
+      - python_api
+    networks:
+      - browser_network
+
+networks:
+  browser_network:
+    driver: bridge

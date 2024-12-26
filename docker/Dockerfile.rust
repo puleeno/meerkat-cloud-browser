@@ -1,0 +1,45 @@
+FROM rust:1.83-bullseye as builder
+
+# Install Python dependencies
+RUN apt-get update && apt-get install -y \
+    python3.6 \
+    python3-pip \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+# Copy Python requirements and install
+COPY python_api/requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy Rust project files
+COPY rust_proxy/Cargo.toml .
+COPY rust_proxy/src ./src
+
+# Build Rust project
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bullseye-slim
+
+# Install Python and Firefox
+RUN apt-get update && apt-get install -y \
+    python3.6 \
+    python3-pip \
+    firefox-esr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python requirements and install
+COPY python_api/requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy Python app
+COPY python_api/app ./app
+
+# Copy Rust binary
+COPY --from=builder /usr/src/app/target/release/rust_proxy /usr/local/bin/
+
+EXPOSE 3000 8000
+
+CMD ["rust_proxy"]
