@@ -34,8 +34,8 @@ class BrowserController:
             profile = pm.get_profile_by_name(profile_name)
             profile.set_required_configs()
 
-            self.firefox = Firefox(profile)
-            self.firefox.start()
+            self.firefox = Firefox()
+            self.firefox.start("https://example.com/", port, profile_name)
 
             client = RDPClient()
             client.connect("localhost", port)
