@@ -1,51 +1,24 @@
-# Browser Control API
+# Meerkat Cloud Browser
+Control Browser Server via Web API
 
-A browser automation system using Rust and Python with Firefox WebDriver.
+# Backend
 
-## Architecture
+- Web Server: https://github.com/hansonkd/puff#puff--asyncio
+- Proxy Server: Develop new proxy that can stream video data written in Rust
+-
+# Web app: FastAPI
 
-- Python FastAPI backend for browser control
-- Rust proxy server for request handling
-- Firefox browser automation using geckordp
+# Frontend:
+   - Data Extraction GUI: https://github.com/xyflow/xyflow
+   - Dashboard: Clean Admin GUI
 
-## Setup
+# Database:
+   - Main DB: Postgres
+   - Cache: Consider using SlateDB - https://docs.rs/slatedb/latest/slatedb/
 
-### Prerequisites
+# Batch:
+   - Use Python RQ to handle batch runner and execute Firefox ESR to crawl data
+   - Browser: Firefox ESR to support login and cookies
 
-- Docker and Docker Compose
-- Firefox browser (for local development)
-
-### Running with Docker
-
-```bash
-docker-compose up -d
-```
-
-### Running Locally
-
-1. Start Python API:
-
-```bash
-cd python_api
-pip install -r requirements.txt
-hypercorn python_api/app/main:app --bind 0.0.0.0:8000
-```
-
-2. Start Rust Proxy:
-
-```bash
-cd rust_proxy
-cargo run
-```
-
-## API Endpoints
-- `POST /browser/start` - Start browser
-- `POST /browser/navigate` - Navigate to URL
-- `POST /browser/stop` - Stop browser
-- `GET /browser/screenshot` - Take screenshot
-- `POST /browser/execute` - Execute JavaScript
-
-## Development
-
-- Python API documentation: http://localhost:8000/docs
-- Logs are stored in `./logs` directory
+# Drivers
+- geckordp: https://jpramosi.github.io/geckordp/index.html
