@@ -1,10 +1,12 @@
 from flask import Flask
 from dotenv import load_dotenv
 import os
+from .logging_config import setup_logging
 
 
 def create_app() -> Flask:
 	load_dotenv()
+	setup_logging()
 	app = Flask(__name__)
 
 	# DB config (default SQLite if no DATABASE_URL)

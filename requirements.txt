@@ -5,6 +5,7 @@ Flask-Migrate==4.0.7
 SQLAlchemy==2.0.35
 psycopg[binary]==3.2.3
 PyMySQL==1.1.1
-playwright==1.55.0
+playwright==1.47.0
 requests==2.32.3
-scrapy==2.13.3
+scrapy==2.11.2
+PySocks==1.7.1

@@ -2,13 +2,17 @@ from typing import Dict, List
 import threading
 import requests
 import json
+from .proxy_pool import get_next_proxy
 
 
-def _requests_fetch(years: List[int], cookies: List[dict], headers: Dict[str, str] | None):
+def _requests_fetch(years: List[int], cookies: List[dict], headers: Dict[str, str] | None, proxy_url: str | None):
 	results: Dict[int, int] = {}
 	raw_map: Dict[int, str] = {}
 	cookie_header = "; ".join([f"{c['name']}={c.get('value','')}" for c in cookies if c.get('name')])
 	session = requests.Session()
+	proxy = proxy_url or get_next_proxy()
+	if proxy:
+		session.proxies.update({"http": proxy, "https": proxy})
 	for y in years:
 		url = f"https://www.rei.com/order-details/rs/purchase-details/history?year={y}"
 		hs = dict(headers or {})
@@ -28,10 +32,10 @@ def _requests_fetch(years: List[int], cookies: List[dict], headers: Dict[str, st
 	return results, raw_map
 
 
-def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict], headers: Dict[str, str] | None = None):
+def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict], headers: Dict[str, str] | None = None, proxy_url: str | None = None):
 	# Nếu không ở main thread (dashboard/CLI nền), tránh Scrapy/Twisted signal -> dùng requests
 	if threading.current_thread() is not threading.main_thread():
-		return _requests_fetch(years, cookies, headers)
+		return _requests_fetch(years, cookies, headers, proxy_url)
 
 	try:
 		from scrapy.crawler import CrawlerProcess  # lazy import
@@ -39,15 +43,20 @@ def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict], hea
 		from ..spiders.rei_history import ReiHistorySpider  # lazy import
 	except Exception:
 		# Fallback requests nếu Scrapy không sẵn sàng
-		return _requests_fetch(years, cookies, headers)
+		return _requests_fetch(years, cookies, headers, proxy_url)
 
 	results: Dict[int, int] = {}
 	raw_map: Dict[int, str] = {}
+	proxy = proxy_url or get_next_proxy()
 
-	process = CrawlerProcess(settings={
+	settings = {
 		"LOG_LEVEL": "ERROR",
 		"USER_AGENT": headers.get("User-Agent") if headers else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36",
-	})
+	}
+	if proxy:
+		settings.update({"HTTPPROXY_ENABLED": True})
+
+	process = CrawlerProcess(settings=settings)
 
 	def collect(item):
 		y = int(item.get("year"))
@@ -57,6 +66,9 @@ def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict], hea
 
 	crawler = process.create_crawler(ReiHistorySpider)
 	crawler.signals.connect(collect, signal=signals.item_scraped)
-	process.crawl(crawler, years=years, cookies=cookies, headers=headers or {})
+	kwargs = {"years": years, "cookies": cookies, "headers": headers or {}}
+	if proxy:
+		kwargs["proxy"] = proxy
+	process.crawl(crawler, **kwargs)
 	process.start()
 	return results, raw_map

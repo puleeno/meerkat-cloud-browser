@@ -14,6 +14,7 @@ class Account(db.Model):
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 	cookies_json = db.Column(db.Text)  # lưu cookie jar dạng JSON
 	headers_json = db.Column(db.Text)  # lưu request headers dùng khi login
+	error_message = db.Column(db.Text)  # lưu thông báo lỗi (ví dụ từ .sr-only)
 
 	stats = db.relationship("AccountYearStat", backref="account", lazy=True, cascade="all, delete-orphan")
 

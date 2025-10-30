@@ -1,8 +1,12 @@
 import click
+import sys, asyncio
+
 from flask import current_app
 from .extensions import db
 from .models import Account
 
+if sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 @click.command("check-accounts")
 @click.option("--email", "emails", multiple=True, help="Email tài khoản cần check (có thể lặp). Nếu không chỉ định, mặc định chỉ chạy các tài khoản can_login IS NULL")
