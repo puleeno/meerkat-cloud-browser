@@ -22,15 +22,37 @@
 				<th>Đăng nhập?</th>
 				<th>Tổng đơn</th>
 				<th>Lần kiểm tra gần nhất</th>
+				<th>Lỗi</th>
+				<th>Loại lỗi</th>
+				<th>Ảnh sau login (TG)</th>
+				<th>Thông báo thống kê (TG)</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for a in accounts %}
 			<tr>
 				<td>{{ a.email }}</td>
-				<td>{{ '✅' if a.can_login else '❌' }}</td>
+				<td>{{ '✅' if a.can_login else '❌' if a.can_login is not none else '⏳' }}</td>
 				<td>{{ a.total_orders }}</td>
 				<td class="muted">{{ a.last_checked_at or '-' }}</td>
+				<td>{{ a.error_message or '-' }}</td>
+				<td>{{ a.login_failure_type or '-' }}</td>
+				<td>
+					{% set u = a.after_login_telegram_message_url %}
+					{% if u and ('http://' in u or 'https://' in u) %}
+						<a href="{{ u }}" target="_blank">mở</a>
+					{% elif u %}
+						<span class="muted">{{ u }}</span>
+					{% else %}-{% endif %}
+				</td>
+				<td>
+					{% set u2 = a.stats_status_telegram_message_url %}
+					{% if u2 and ('http://' in u2 or 'https://' in u2) %}
+						<a href="{{ u2 }}" target="_blank">mở</a>
+					{% elif u2 %}
+						<span class="muted">{{ u2 }}</span>
+					{% else %}-{% endif %}
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>

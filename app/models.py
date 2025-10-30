@@ -15,6 +15,11 @@ class Account(db.Model):
 	cookies_json = db.Column(db.Text)  # lưu cookie jar dạng JSON
 	headers_json = db.Column(db.Text)  # lưu request headers dùng khi login
 	error_message = db.Column(db.Text)  # lưu thông báo lỗi (ví dụ từ .sr-only)
+	# Lưu URL Telegram thay vì chỉ message_id
+	after_login_telegram_message_url = db.Column(db.Text)
+	stats_status_telegram_message_url = db.Column(db.Text)
+	# Phân loại lỗi đăng nhập: 'credentials', 'proxy', 'blocked', 'unknown'
+	login_failure_type = db.Column(db.String(32))
 
 	stats = db.relationship("AccountYearStat", backref="account", lazy=True, cascade="all, delete-orphan")
 

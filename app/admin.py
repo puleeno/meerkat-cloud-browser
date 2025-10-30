@@ -32,8 +32,11 @@ def parse_accounts(lines):
 
 @admin_bp.get("/dashboard")
 def dashboard():
+	from os import getenv
 	accounts = Account.query.order_by(Account.created_at.desc()).all()
-	return render_template("dashboard.html", accounts=accounts)
+	chat_id = getenv("TELEGRAM_CHAT_ID")
+	chat_username = getenv("TELEGRAM_CHAT_USERNAME")
+	return render_template("dashboard.html", accounts=accounts, tg_chat_id=chat_id, tg_chat_username=chat_username)
 
 
 @admin_bp.post("/upload")

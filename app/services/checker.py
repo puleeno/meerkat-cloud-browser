@@ -120,45 +120,123 @@ def _wait_login_page(page):
 
 
 def _extract_login_error(page) -> str | None:
-    """Cố gắng trích xuất thông báo lỗi đăng nhập từ nhiều selector phổ biến."""
-    candidates = [
-        ".sr-only",
-        "[role='alert']",
-        ".alert",
-        ".error",
-        ".error-message",
-        ".form-group .help-block",
-        "#login-form .help-block",
-        "#Logon .help-block",
-    ]
-    for sel in candidates:
-        try:
-            loc = page.locator(sel).first
-            if loc.count() > 0:
-                # ưu tiên phần tử hiển thị
-                try:
-                    if loc.is_visible():
-                        txt = loc.inner_text(timeout=800)
-                        if txt and txt.strip():
-                            return txt.strip()[:500]
-                except Exception:
-                    pass
-                # fallback: lấy inner_text dù ẩn (sr-only)
-                try:
-                    txt = loc.inner_text(timeout=800)
-                    if txt and txt.strip():
-                        return txt.strip()[:500]
-                except Exception:
-                    pass
-        except Exception:
-            continue
-    # cuối cùng: lấy một đoạn từ body nếu có
+    # Đợi ngắn để UI render thông báo
     try:
-        body_txt = page.locator("body").inner_text(timeout=800)
-        if body_txt and body_txt.strip():
-            return body_txt.strip()[:500]
+        page.wait_for_timeout(400)
     except Exception:
         pass
+    # Thử nhiều vị trí thông báo lỗi phổ biến trên REI và chung
+    # Ưu tiên các selector đặc thù REI
+    selectors = [
+        "[data-ui='error-credentials'] .alert-text",
+        "p.alert.alert-danger .alert-text",
+        "#page-content [data-ui='error-credentials'] .alert-text",
+        ".error-msg [data-ui='login-module-error-invalid-fields'] .msg",
+        "[role='alert']",
+        "div[aria-live='assertive']",
+        "div[aria-live='polite']",
+        ".alert, .alert-danger, .c-alert__message",
+        ".error, .field-error, .form-error, .inline-error",
+        "#loginError, #error, #auth-error",
+        "span.sr-only, .sr-only",
+        "[data-test='error'], [data-testid='error'], [data-qa='error']",
+        "[class*='error']",
+    ]
+    for sel in selectors:
+        try:
+            els = page.query_selector_all(sel) or []
+            for el in els:
+                try:
+                    vis = False
+                    try:
+                        vis = el.is_visible()
+                    except Exception:
+                        pass
+                    txt = (el.inner_text() or el.text_content() or "").strip()
+                    if txt and (vis or len(txt) > 5):
+                        return txt
+                except Exception:
+                    continue
+        except Exception:
+            continue
+    # Fallback: thử đọc lỗi từ JSON nhúng trong page (REI để trong data-client-store="page-meta-data")
+    try:
+        el = page.locator("script[data-client-store='page-meta-data']").first
+        if el and el.count() > 0:
+            raw = (el.inner_text() or el.text_content() or "").strip()
+            if raw:
+                try:
+                    data = json.loads(raw)
+                    err = (data.get("errorCodes") or "").strip()
+                    if err:
+                        return err
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    return None
+
+
+def _classify_login_failure(page, error_text: str) -> str:
+    """Trả về: 'credentials' | 'blocked' | 'proxy' | 'unknown'"""
+    txt = (error_text or "").lower()
+    try:
+        body_text = (page.inner_text("body") or "").lower()
+    except Exception:
+        body_text = ""
+    url_now = ""
+    try:
+        url_now = page.url or ""
+    except Exception:
+        pass
+
+    cred_markers = [
+        "doesn't match our records",
+        "doesnt match our records",
+        "information you entered",
+        "incorrect",
+        "invalid",
+        "mismatch",
+        "wrong password",
+        "account not found",
+    ]
+    blocked_markers = [
+        "access denied",
+        "forbidden",
+        "403",
+        "captcha",
+        "verify you are human",
+        "bot detected",
+        "temporarily blocked",
+    ]
+
+    if any(k in txt for k in cred_markers):
+        return "credentials"
+    if any(k in body_text for k in cred_markers):
+        return "credentials"
+
+    if any(k in body_text for k in blocked_markers) or any(k in (url_now or "").lower() for k in ["access", "forbidden", "captcha", "blocked", "403"]):
+        return "blocked"
+
+    # Nếu không trích xuất được thông điệp cụ thể, thường là lỗi kết nối/proxy
+    if (error_text or "").strip().lower() == "login failed":
+        return "proxy"
+
+    return "unknown"
+
+
+def _build_tg_message_url(message_id: int | str | None) -> str | None:
+    if not message_id:
+        return None
+    from os import getenv
+    mid = str(message_id)
+    username = getenv("TELEGRAM_CHAT_USERNAME")
+    chat_id = getenv("TELEGRAM_CHAT_ID")
+    if username:
+        return f"https://t.me/{username}/{mid}"
+    if chat_id and str(chat_id).startswith("-100"):
+        return f"https://t.me/c/{str(chat_id)[4:]}/{mid}"
+    # Không đủ thông tin để build URL hợp lệ
     return None
 
 
@@ -413,16 +491,26 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[bool, list
 				cookies = context.cookies()
 
 				# chụp ảnh sau khi login
+				after_login_msg_id = None
 				try:
 					img2 = page.screenshot(full_page=False)
-					send_photo_bytes(img2, caption=f"Sau khi login: {email}", filename=f"{_safe_key(email)}-after-login.png")
+					after_login_msg_id = send_photo_bytes(img2, caption=f"Sau khi login: {email}", filename=f"{_safe_key(email)}-after-login.png")
 				except Exception:
 					try:
 						screens_dir = os.path.join("instance", "screens")
 						os.makedirs(screens_dir, exist_ok=True)
 						after_path = os.path.join(screens_dir, f"{_safe_key(email)}-after-login-{int(time.time())}.png")
 						page.screenshot(path=after_path, full_page=False)
-						send_photo(after_path, caption=f"Sau khi login: {email}")
+						msg_id_tmp = send_photo(after_path, caption=f"Sau khi login: {email}")
+						url_tmp = _build_tg_message_url(msg_id_tmp)
+						if url_tmp:
+							_acc = locals().get('account')
+							if _acc:
+								_acc.after_login_telegram_message_url = url_tmp
+								try:
+									db.session.commit()
+								except Exception:
+									logger.exception("DB commit failed after saving after-login image URL (file) | email=%s", email)
 					except Exception:
 						pass
 
@@ -449,6 +537,14 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[bool, list
 				except Exception:
 					login_ok = False
 
+				# Trước khi đóng trình duyệt, nếu đăng nhập thất bại thì trích xuất lỗi khi DOM còn tồn tại
+				err_text_before_close = None
+				if not login_ok:
+					try:
+						err_text_before_close = _extract_login_error(page)
+					except Exception:
+						err_text_before_close = None
+
 				if keep_open:
 					while browser.is_connected():
 						time.sleep(0.5)
@@ -457,9 +553,7 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[bool, list
 				if persist_enabled and delete_profile and profile_dir and not keep_open:
 					shutil.rmtree(profile_dir, ignore_errors=True)
 				if not login_ok:
-					# trích xuất thông báo lỗi rõ ràng
-					err_text = _extract_login_error(page)
-					return False, [], {}, err_text
+					return False, [], {}, err_text_before_close
 				return True, cookies, final_headers, None
 			except Exception:
 				try:
@@ -519,8 +613,21 @@ def _process_accounts(app, emails: List[str], on_event=None) -> None:
 				account.can_login = False
 				account.last_checked_at = datetime.utcnow()
 				account.error_message = login_error
+				# Phân loại lỗi theo thông báo đã có (page không sẵn có ở đây)
 				try:
-					send_message(f"[Login FAIL] {email}")
+					account.login_failure_type = _classify_login_failure(None, login_error or "")
+				except Exception:
+					account.login_failure_type = None
+				# Gửi thông báo Telegram ngắn gọn về lỗi
+				try:
+					fail_text = login_error or "Login failed"
+					fail_type = account.login_failure_type or "unknown"
+					fail_msg_id = send_message(f"[Login FAIL] {email}\nType: {fail_type}\n{fail_text}")
+					if fail_msg_id:
+						url_fail = _build_tg_message_url(fail_msg_id)
+						if url_fail:
+							account.stats_status_telegram_message_url = url_fail
+							db.session.commit()
 				except Exception:
 					pass
 				logger.info("Login FAIL | email=%s", email)
@@ -545,10 +652,11 @@ def _process_accounts(app, emails: List[str], on_event=None) -> None:
 				if raw_map:
 					stat.raw_json = json.dumps(raw_map[year], ensure_ascii=False)
 
+			stats_msg_id = None
 			try:
 				if per_year and can_login:
 					years_text = "\n".join([f"- {y}: {per_year[y]} đơn" for y in sorted(per_year.keys())])
-					send_message(f"Kết quả đơn hàng cho {email}:\n{years_text}\nTổng: {total}")
+					stats_msg_id = send_message(f"Kết quả đơn hàng cho {email}:\n{years_text}\nTổng: {total}")
 					logger.info("Orders | email=%s | total=%s | years=%s", email, total, sorted(per_year.keys()))
 			except Exception:
 				pass
@@ -566,10 +674,28 @@ def _process_accounts(app, emails: List[str], on_event=None) -> None:
 					account.headers_json = json.dumps(headers, ensure_ascii=False)
 				except Exception:
 					pass
-			account.error_message = None
+			# lưu message ids nếu có
+			try:
+				# Một số nhánh đặt tên biến id khác nhau, gom lại an toàn
+				_tmp_id = locals().get('after_login_msg_id') or locals().get('msg_id_tmp')
+				if _tmp_id:
+					url = _build_tg_message_url(_tmp_id)
+					if url:
+						account.after_login_telegram_message_url = url
+				if stats_msg_id:
+					url2 = _build_tg_message_url(stats_msg_id)
+					if url2:
+						account.stats_status_telegram_message_url = url2
+			except Exception:
+				pass
 			db.session.commit()
 			try:
-				send_message(f"[Login OK] {email} | Tổng đơn: {total}")
+				ok_msg_id = send_message(f"[Login OK] {email} | Tổng đơn: {total}")
+				if ok_msg_id and not stats_msg_id:
+					url_ok = _build_tg_message_url(ok_msg_id)
+					if url_ok:
+						account.stats_status_telegram_message_url = url_ok
+					db.session.commit()
 			except Exception:
 				pass
 			logger.info("Login OK | email=%s | total=%s", email, total)
