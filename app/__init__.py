@@ -47,4 +47,8 @@ def create_app() -> Flask:
 	from .admin import admin_bp
 	app.register_blueprint(admin_bp, url_prefix="/admin")
 
+	# CLI commands
+	from .cli import register_cli
+	register_cli(app)
+
 	return app

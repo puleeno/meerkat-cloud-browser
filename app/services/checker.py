@@ -370,3 +370,9 @@ def enqueue_accounts_check(emails: List[str]) -> None:
 			_wooder = threading.Thread(target=target, daemon=True)
 			_wooder.start()
 			_worker_thread = _wooder
+
+
+def run_accounts_check_sync(emails: List[str]) -> None:
+	"""Chạy kiểm tra đồng bộ (blocking) cho danh sách emails."""
+	app = current_app._get_current_object()
+	_process_accounts(app, emails)
