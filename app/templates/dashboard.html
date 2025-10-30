@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+	<h2>Nhập tài khoản</h2>
+	<form action="{{ url_for('admin.upload_accounts') }}" method="post" enctype="multipart/form-data">
+		<div>
+			<label>Paste danh sách (email:password, mỗi dòng):</label><br/>
+			<textarea name="accounts_text" rows="8" style="width:100%;" placeholder="email:password"></textarea>
+		</div>
+		<div style="margin:8px 0;">Hoặc upload file (.txt/.csv): <input type="file" name="accounts_file" accept=".txt,.csv"/></div>
+		<button type="submit">Lưu và chạy batch</button>
+	</form>
+
+	<h2 style="margin-top:24px;">Tài khoản</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Email</th>
+				<th>Đăng nhập?</th>
+				<th>Tổng đơn</th>
+				<th>Lần kiểm tra gần nhất</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for a in accounts %}
+			<tr>
+				<td>{{ a.email }}</td>
+				<td>{{ '✅' if a.can_login else '❌' }}</td>
+				<td>{{ a.total_orders }}</td>
+				<td class="muted">{{ a.last_checked_at or '-' }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

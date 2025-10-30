@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Đăng nhập Admin</h2>
+<form method="post" action="{{ url_for('auth.login_post') }}">
+	<div>
+		<label>Username</label><br/>
+		<input type="text" name="username" required />
+	</div>
+	<div style="margin-top:8px;">
+		<label>Password</label><br/>
+		<input type="password" name="password" required />
+	</div>
+	<button type="submit" style="margin-top:12px;">Đăng nhập</button>
+</form>
+{% endblock %}

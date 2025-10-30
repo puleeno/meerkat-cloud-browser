@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Meerkat Dashboard</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<style>
+		body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 20px; }
+		table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+		th, td { border: 1px solid #ddd; padding: 8px; }
+		th { background: #f7f7f7; text-align: left; }
+		.muted { color: #666; }
+	</style>
+</head>
+<body>
+	<h1>Meerkat Dashboard</h1>
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			<ul>
+			{% for cat, msg in messages %}
+				<li><strong>[{{cat}}]</strong> {{msg}}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	{% block content %}{% endblock %}
+</body>
+</html>

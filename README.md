@@ -3,7 +3,7 @@
 Dự án Flask khởi tạo tối thiểu cho Windows.
 
 ## Yêu cầu
-- Python 3.10+ đã cài đặt và có `python`/`pip` trong PATH
+- Python 3.12.x (khuyến nghị). Tránh Python 3.13 do `greenlet` chưa có wheel tương thích trên Windows.
 - (Khuyến nghị) PowerShell hoặc Git Bash
 
 ## Thiết lập nhanh (Windows PowerShell)
@@ -16,8 +16,16 @@ pip install -r requirements.txt
 # (Tuỳ chọn) tạo file .env từ mẫu
 copy env.example .env
 
+# Cài Playwright browsers
+python -m playwright install firefox
+
 # Chạy server
 python wsgi.py
+```
+
+Lưu ý: nếu máy bạn có nhiều phiên bản Python, hãy tạo môi trường với Python 3.12 cụ thể:
+```powershell
+py -3.12 -m venv .venv
 ```
 
 ## Thiết lập nhanh (Git Bash)
@@ -30,8 +38,16 @@ pip install -r requirements.txt
 # (Tuỳ chọn) tạo file .env từ mẫu
 cp env.example .env
 
+# Cài Playwright browsers
+python -m playwright install firefox
+
 # Chạy server
 python wsgi.py
+```
+
+Nếu có nhiều phiên bản Python, tạo môi trường với 3.12 cụ thể:
+```bash
+py -3.12 -m venv .venv
 ```
 
 Sau khi chạy, truy cập `http://127.0.0.1:5000/` để kiểm tra.
@@ -41,6 +57,13 @@ Sau khi chạy, truy cập `http://127.0.0.1:5000/` để kiểm tra.
 app/
   __init__.py
   routes.py
+  admin.py
+  models.py
+  services/
+    checker.py
+  templates/
+    base.html
+    dashboard.html
 wsgi.py
 requirements.txt
 env.example
@@ -62,6 +85,27 @@ Gợi ý tạo `.env`:
 # MySQL
 # DATABASE_URL=mysql+pymysql://user:pass@localhost:3306/meerkat
 ```
+
+## Migrate DB
+- PowerShell:
+```powershell
+$env:FLASK_APP="wsgi.py"
+flask db init
+flask db migrate -m "init db"
+flask db upgrade
+```
+- Git Bash:
+```bash
+export FLASK_APP=wsgi.py
+flask db init
+flask db migrate -m "init db"
+flask db upgrade
+```
+
+## Luồng kiểm tra tài khoản (Playwright -> Cookie -> Scrapy)
+1. Playwright đăng nhập REI bằng Firefox, lưu cookie jar phiên vào storage.
+2. Scrapy sử dụng cookie đã lưu để gọi endpoint lịch sử đơn theo từng năm (2014 → năm hiện tại), giảm thiểu tương tác trình duyệt và requests thừa.
+3. Kết quả được lưu về DB theo từng năm và tổng đơn hàng, kèm trạng thái đăng nhập.
 
 ## Ghi chú
 - Biến môi trường `SECRET_KEY` sẽ mặc định là `dev-secret` nếu không đặt trong `.env`.
