@@ -13,6 +13,7 @@ class Account(db.Model):
 	last_checked_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 	cookies_json = db.Column(db.Text)  # lưu cookie jar dạng JSON
+	headers_json = db.Column(db.Text)  # lưu request headers dùng khi login
 
 	stats = db.relationship("AccountYearStat", backref="account", lazy=True, cascade="all, delete-orphan")
 

@@ -5,6 +5,7 @@ from typing import Dict, List
 import os
 import random
 import json
+import shutil
 
 from flask import current_app
 
@@ -16,6 +17,10 @@ from .history_fetcher import fetch_orders_per_year_with_scrapy
 
 _worker_lock = threading.Lock()
 _worker_thread = None
+
+
+def _safe_key(email: str) -> str:
+	return email.lower().replace("@", "_at_").replace("/", "_").replace("\\", "_")
 
 
 def _parse_proxy() -> dict | None:
@@ -34,19 +39,65 @@ def _humanize_page(page):
 			x = random.randint(50, w - 50)
 			y = random.randint(50, h - 50)
 			page.mouse.move(x, y, steps=random.randint(8, 20))
-			page.wait_for_timeout(random.randint(100, 300))
+			page.wait_for_timeout(random.randint(120, 260))
 		page.mouse.wheel(0, random.randint(200, 600))
-		page.wait_for_timeout(random.randint(100, 300))
+		page.wait_for_timeout(random.randint(120, 260))
 	except Exception:
 		pass
 
 
-def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua: str, viewport: dict):
-	# Dùng profile riêng theo email sẽ được set ở nơi gọi bằng user_data_dir
+def _maybe_random_browse(page):
+	"""Trước khi login, lướt nhẹ và có thể click ngẫu nhiên 1 item/link."""
+	try:
+		# Scroll vài lần
+		for _ in range(random.randint(1, 3)):
+			page.mouse.wheel(0, random.randint(300, 900))
+			page.wait_for_timeout(random.randint(200, 500))
+		# 50% cơ hội click ngẫu nhiên 1 link có href hợp lệ
+		if random.random() < 0.5:
+			candidates = page.locator("a[href]:visible").all()[:200]
+			if candidates:
+				el = random.choice(candidates)
+				href = el.get_attribute("href") or ""
+				if href and not href.startswith("#") and "login" not in href and "signin" not in href:
+					try:
+						el.scroll_into_view_if_needed()
+						el.click(timeout=2000)
+						page.wait_for_timeout(random.randint(400, 900))
+						# quay lại trang chủ
+						page.go_back(timeout=5000)
+					except Exception:
+						pass
+	except Exception:
+		pass
+
+
+def _slow_type(locator, value: str):
+	"""Gõ ký tự có độ trễ để giống người dùng."""
+	try:
+		locator.click()
+		locator.fill("")
+		for ch in value:
+			locator.type(ch, delay=random.randint(110, 260))
+			# thỉnh thoảng dừng nhẹ lâu hơn
+			if random.random() < 0.18:
+				locator.page.wait_for_timeout(random.randint(160, 380))
+	except Exception:
+		# fallback fill nếu type thất bại
+		try:
+			locator.fill(value)
+		except Exception:
+			pass
+
+
+def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua: str, viewport: dict, email: str):
 	launch = p.firefox.launch_persistent_context if engine == "firefox" else p.chromium.launch_persistent_context
 	proxy = _parse_proxy()
+	base_dir = os.getenv("PLAYWRIGHT_PROFILE_DIR", os.path.join(".playwright", "profiles"))
+	os.makedirs(base_dir, exist_ok=True)
+	user_dir = os.path.join(base_dir, _safe_key(email))
 	ctx = launch(
-		user_data_dir=os.getenv("PLAYWRIGHT_PROFILE_DIR", os.path.join(".playwright", "profiles")),
+		user_data_dir=user_dir,
 		headless=headless,
 		slow_mo=slow_mo_ms,
 		user_agent=ua,
@@ -59,13 +110,12 @@ def _make_persistent_context(p, engine: str, headless: bool, slow_mo_ms: int, ua
 			"Upgrade-Insecure-Requests": "1",
 		},
 		proxy=proxy,
-		# Prefs cho Firefox để hạn chế chặn (không bật RFP)
 		**({"firefox_user_prefs": {"privacy.resistFingerprinting": False, "dom.webdriver.enabled": False}} if engine == "firefox" else {}),
 	)
-	return ctx
+	return ctx, user_dir
 
 
-def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int):
+def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int, email: str):
 	ua_firefox = (
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0"
 	)
@@ -74,14 +124,12 @@ def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int):
 	)
 	ua = ua_firefox if engine == "firefox" else ua_chrome
 
-	viewport = {
-		"width": random.randint(1280, 1440),
-		"height": random.randint(720, 950),
-	}
+	viewport = {"width": random.randint(1280, 1440), "height": random.randint(720, 950)}
 
+	profile_dir = None
 	proxy = _parse_proxy()
 	if os.getenv("PLAYWRIGHT_PERSIST", "0").lower() in ("1", "true", "yes"):
-		context = _make_persistent_context(p, engine, headless, slow_mo_ms, ua, viewport)
+		context, profile_dir = _make_persistent_context(p, engine, headless, slow_mo_ms, ua, viewport, email)
 		browser = context.browser
 	else:
 		browser = (p.firefox if engine == "firefox" else p.chromium).launch(
@@ -101,7 +149,6 @@ def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int):
 			},
 		)
 
-	# Script giảm tín hiệu bot (navigator properties phổ biến)
 	context.add_init_script(
 		"""
 		Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -112,16 +159,15 @@ def _make_browser_and_context(p, engine: str, headless: bool, slow_mo_ms: int):
 	)
 
 	page = context.new_page()
-	return browser, context, page
+	return browser, context, page, profile_dir
 
 
-def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
+def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict], Dict[str, str]]:
 	try:
-		from playwright.sync_api import sync_playwright  # lazy import
+		from playwright.sync_api import sync_playwright
 	except ImportError:
-		return []
+		return [], {}
 
-	# Đọc cấu hình hiển thị GUI từ ENV
 	headless_env = os.getenv("PLAYWRIGHT_HEADLESS")
 	if headless_env is None:
 		headless_default = os.getenv("FLASK_ENV", "").lower() != "development"
@@ -129,34 +175,57 @@ def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
 		headless_default = headless_env.lower() not in ("0", "false", "no")
 	slow_mo_ms = int(os.getenv("PLAYWRIGHT_SLOWMO_MS", "0") or 0)
 	keep_open = os.getenv("PLAYWRIGHT_KEEP_OPEN", "0").lower() in ("1", "true", "yes")
+	delete_profile = os.getenv("PLAYWRIGHT_DELETE_PROFILE", "1").lower() in ("1", "true", "yes")
+	persist_enabled = os.getenv("PLAYWRIGHT_PERSIST", "0").lower() in ("1", "true", "yes")
 
 	with sync_playwright() as p:
 		for engine in ("firefox", "chromium"):
+			browser = None
+			profile_dir = None
 			try:
-				browser, context, page = _make_browser_and_context(p, engine, headless_default, slow_mo_ms)
+				# build UA to also return as header later
+				ua_firefox = (
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) Gecko/20100101 Firefox/141.0"
+				)
+				ua_chrome = (
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+				)
+				ua_used = ua_firefox if engine == "firefox" else ua_chrome
 
-				# 1) Trang chủ → click trực tiếp a.account-sign-in-link
+				browser, context, page, profile_dir = _make_browser_and_context(
+					p, engine, headless_default, slow_mo_ms, email
+				)
+
+				# capture outgoing request headers for rei.com
+				headers_seen: Dict[str, str] = {}
+				def _on_req(req):
+					try:
+						if "rei.com" in req.url:
+							for k, v in (req.headers or {}).items():
+								headers_seen[k.lower()] = v
+					except Exception:
+						pass
+				page.on("request", _on_req)
+
 				page.goto("https://www.rei.com/", wait_until="domcontentloaded")
 				_humanize_page(page)
+				_maybe_random_browse(page)
 				try:
 					link = page.locator("a.account-sign-in-link").first
 					link.wait_for(state="visible", timeout=20000)
 					link.scroll_into_view_if_needed()
 					link.click()
 				except Exception:
-					# Fallback: dùng JS click để vượt overlay
 					try:
 						page.evaluate("document.querySelector('a.account-sign-in-link')?.click()")
 					except Exception:
 						pass
 
-				# 2) Chờ tới /login rồi điền form
 				try:
 					page.wait_for_url(lambda url: "/login" in url or "/user/login" in url, timeout=25000)
 				except Exception:
 					page.goto("https://www.rei.com/login?toUrl=/", wait_until="domcontentloaded")
 
-				# Access Denied guard
 				body_text = (page.locator("body").inner_text(timeout=3000) or "") if page else ""
 				if "Access Denied" in body_text:
 					if keep_open:
@@ -164,10 +233,13 @@ def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
 							time.sleep(0.5)
 					else:
 						browser.close()
+					if persist_enabled and delete_profile and profile_dir and not keep_open:
+						shutil.rmtree(profile_dir, ignore_errors=True)
 					continue
 
-				page.locator("#logonId").fill(email)
-				page.locator("#password").fill(password)
+				# type slowly
+				_slow_type(page.locator("#logonId"), email)
+				_slow_type(page.locator("#password"), password)
 				btn = page.locator("button[data-ui='button-submit']").first
 				if btn.count() == 0:
 					btn = page.locator("#Logon button[type=submit]").first
@@ -178,7 +250,6 @@ def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
 				except Exception:
 					page.wait_for_timeout(2000)
 
-				# Kiểm tra bị chặn sau submit
 				body_text = (page.locator("body").inner_text(timeout=3000) or "")
 				if "Access Denied" in body_text:
 					if keep_open:
@@ -186,45 +257,63 @@ def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
 							time.sleep(0.5)
 					else:
 						browser.close()
+					if persist_enabled and delete_profile and profile_dir and not keep_open:
+						shutil.rmtree(profile_dir, ignore_errors=True)
 					continue
 
 				cookies = context.cookies()
+
+				# build final headers from seen + our known values
+				final_headers: Dict[str, str] = {
+					"User-Agent": ua_used,
+					"Accept": headers_seen.get("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
+					"Accept-Language": headers_seen.get("accept-language", "en-US,en;q=0.9"),
+					"Accept-Encoding": headers_seen.get("accept-encoding", "gzip, deflate, br, zstd"),
+					"Connection": headers_seen.get("connection", "keep-alive"),
+					"Upgrade-Insecure-Requests": headers_seen.get("upgrade-insecure-requests", "1"),
+				}
+				# include sec-* if present
+				for k in list(headers_seen.keys()):
+					if k.startswith("sec-"):
+						final_headers[k.title()] = headers_seen[k]
+
 				if keep_open:
 					while browser.is_connected():
 						time.sleep(0.5)
 				else:
 					browser.close()
-				return cookies
+				if persist_enabled and delete_profile and profile_dir and not keep_open:
+					shutil.rmtree(profile_dir, ignore_errors=True)
+				return cookies, final_headers
 			except Exception:
 				try:
-					if keep_open:
+					if keep_open and browser is not None:
 						while browser.is_connected():
 							time.sleep(0.5)
-					else:
+					elif browser is not None:
 						browser.close()
 				except Exception:
 					pass
+				if persist_enabled and delete_profile and profile_dir and not keep_open:
+					shutil.rmtree(profile_dir, ignore_errors=True)
 				continue
-	return []
+	return [], {}
 
 
 def _fetch_orders_per_year(email: str, password: str):
-	cookies = _playwright_login_and_cookies(email, password)
+	cookies, headers = _playwright_login_and_cookies(email, password)
 	rei_cookies = [c for c in cookies if ".rei.com" in (c.get("domain") or "")]
 	can_login = len(rei_cookies) > 0
 	if not can_login:
-		return False, {}, []
+		return False, {}, [], {}
 
-	# Lưu cookie jar ra file (tuỳ chọn) và trả về để caller lưu DB
 	save_cookies(email, rei_cookies)
 
-	# Tính năm từ 2014 đến hiện tại
 	now = datetime.utcnow().year
 	years = list(range(2014, now + 1))
 
-	# Gọi Scrapy để lấy thống kê theo năm
-	per_year = fetch_orders_per_year_with_scrapy(years, rei_cookies)
-	return True, per_year, rei_cookies
+	per_year = fetch_orders_per_year_with_scrapy(years, rei_cookies, headers=headers)
+	return True, per_year, rei_cookies, headers
 
 
 def _process_accounts(app, emails: List[str]) -> None:
@@ -233,7 +322,7 @@ def _process_accounts(app, emails: List[str]) -> None:
 			account = Account.query.filter_by(email=email).one_or_none()
 			if account is None:
 				continue
-			can_login, per_year, cookies = _fetch_orders_per_year(account.email, account.password)
+			can_login, per_year, cookies, headers = _fetch_orders_per_year(account.email, account.password)
 
 			total = 0
 			for year, count in (per_year or {}).items():
@@ -251,6 +340,11 @@ def _process_accounts(app, emails: List[str]) -> None:
 			if cookies:
 				try:
 					account.cookies_json = json.dumps(cookies, ensure_ascii=False)
+				except Exception:
+					pass
+			if headers:
+				try:
+					account.headers_json = json.dumps(headers, ensure_ascii=False)
 				except Exception:
 					pass
 			db.session.commit()

@@ -1,19 +1,19 @@
 from typing import Dict, List
 
 
-def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict]) -> Dict[int, int]:
+def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict], headers: Dict[str, str] | None = None) -> Dict[int, int]:
 	try:
 		from scrapy.crawler import CrawlerProcess  # lazy import
+		from scrapy import signals
 		from ..spiders.rei_history import ReiHistorySpider  # lazy import
 	except Exception:
-		# Scrapy chưa được cài hoặc môi trường thiếu dependency; trả về rỗng để app không lỗi
 		return {}
 
 	results: Dict[int, int] = {}
 
 	process = CrawlerProcess(settings={
 		"LOG_LEVEL": "ERROR",
-		"USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36",
+		"USER_AGENT": headers.get("User-Agent") if headers else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36",
 	})
 
 	def collect(item):
@@ -22,7 +22,7 @@ def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict]) -> 
 		results[y] = count
 
 	crawler = process.create_crawler(ReiHistorySpider)
-	crawler.signals.connect(collect, signal=crawler.signals.item_scraped)
-	process.crawl(crawler, years=years, cookies=cookies)
+	crawler.signals.connect(collect, signal=signals.item_scraped)
+	process.crawl(crawler, years=years, cookies=cookies, headers=headers or {})
 	process.start()
 	return results
