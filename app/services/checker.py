@@ -232,6 +232,13 @@ def _build_tg_message_url(message_id: int | str | None) -> str | None:
     mid = str(message_id)
     username = getenv("TELEGRAM_CHAT_USERNAME")
     chat_id = getenv("TELEGRAM_CHAT_ID")
+    # Cho phép override base URL nếu dùng bên thứ ba (ví dụ tgstat, private viewer)
+    custom_base = getenv("TELEGRAM_CHAT_URL_BASE")
+    if custom_base:
+        try:
+            return f"{custom_base.rstrip('/')}/{mid}"
+        except Exception:
+            pass
     if username:
         return f"https://t.me/{username}/{mid}"
     if chat_id and str(chat_id).startswith("-100"):
@@ -623,13 +630,15 @@ def _process_accounts(app, emails: List[str], on_event=None) -> None:
 					fail_text = login_error or "Login failed"
 					fail_type = account.login_failure_type or "unknown"
 					fail_msg_id = send_message(f"[Login FAIL] {email}\nType: {fail_type}\n{fail_text}")
+					logger.info("TG notify fail | email=%s | msg_id=%s", email, str(fail_msg_id))
 					if fail_msg_id:
 						url_fail = _build_tg_message_url(fail_msg_id)
+						logger.info("TG url built | email=%s | url=%s", email, url_fail)
 						if url_fail:
 							account.stats_status_telegram_message_url = url_fail
 							db.session.commit()
 				except Exception:
-					pass
+					logger.exception("TG notify exception | email=%s", email)
 				logger.info("Login FAIL | email=%s", email)
 				db.session.commit()
 				if on_event:

@@ -1,17 +1,27 @@
 [
   {
-    "name": "mbox",
-    "value": "PC#be6a0e87-960a-4b40-86d5-683184e5945d.35_0#1761916653|session#be6a0e87-960a-4b40-86d5-683184e5945d#1761832053",
+    "name": "REI-Test-Segment",
+    "value": "95 percent passthrough",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1793366255,
+    "expires": 1764434622,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "mbox",
+    "value": "PC#c6cc592c-24c4-4df7-b02c-4a603e4456d1.35_0#1761929020|session#c6cc592c-24c4-4df7-b02c-4a603e4456d1#1761844420",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1793378622,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "akamai_session",
-    "value": "23.32.29.103.39133491761830254443",
+    "value": "23.205.108.143.3998948176184262180",
     "domain": ".rei.com",
     "path": "/",
     "expires": -1,
@@ -21,10 +31,10 @@
   },
   {
     "name": "EdgeLocation",
-    "value": "10.78,106.70",
+    "value": "38.2545,-85.7595",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1761916656,
+    "expires": 1761929023,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
@@ -34,14 +44,14 @@
     "value": "ab8e18ef4e",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761833856,
+    "expires": 1761846223,
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "PIM-SESSION-ID",
-    "value": "cGFhdND4GjD5EC37",
+    "value": "VQ5SkJd3NzCB1FrB",
     "domain": ".rei.com",
     "path": "/",
     "expires": -1,
@@ -61,10 +71,10 @@
   },
   {
     "name": "ak_bmsc",
-    "value": "86187F594579291DF3E6789D2CD13080~000000000000000000000000000000~YAAQZx0gF1hQrjOaAQAAZUBENR20Rw149MT3ii3r2Yp4ocGioVkoH7ncRa/02IR8jt1Z4VzkU2LCA3c8TnyyOrndiUkZgIMziOOIWONP3dqvCHWV6jRrl8nOTiO8SD/J2ozDIAnsH8B1DiazGKZv8IZyz9MstoX7bSBa/o2EzAXoI4rq1qx5s9zeqimAGeLqdfu0YFYzqkXs+cIE9CyukK/gDPFtCLoP3HlU7jA/D9jRxrZZzsORgcfAayFjUrGn+upFSIo0t1U3+8CO5rX8T1K1qEoYS1zrMXzswPhuAUa4zpn4SuvOKxGKshEHU+KjiMPLEXdpYVOIV4rTBnz1Nsi9EhcUa79gZJMbriIcgMyqnS/b7wylDggl1/dJEGDmU1n/SticEDwvxaGoz3RsJwj18fTdygYppslCGF1zWuFKS3APFj4dC2HNPfraiVQ06RYdSRWsmGM4N2k=",
+    "value": "220C689C2E0C098938626599F340D85E~000000000000000000000000000000~YAAQj2zNF1/LRy+aAQAAU/wANh0dOEY7OzveLZZkxLuqz+hIULqZkasz+7425jTc1ISeCI0lsvNuos8mNhrSnOD9BWaVDp+eDYLDbWL1Oyhg4uyZ5CPUciUR/o/6DR9l5I1YzjRwxwUeHeIP2XqcGIirzK/aGV+Mb+fRuuiRQpLXMR+M7FxltqtMx9an1OcSV5U5uihd4zcMKTiX9FADetTYgnpTDAmbUaVZ5C/3TitGCBTA8KiuZqKdEkZniaYMBDw6bbWplwsYzCc91SvXceU1pGyQAlcLjLa2wWMhTw4fAfvMDeO0iBaL6bLr6o0M+78PlJ/6GYadOTasavrLd42E+JF3MZztEACOcjkK4WweFXFZr4zneRhoP5aQnN5SAGc9B7QSqtmu0RcDeNKiZQxc5rDYyhh5dupiEHnWkgpBdBeBaooqSu/scKU/k4n5y/4mwFe3ZEWYrD0=",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761837455,
+    "expires": 1761849823,
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
@@ -80,31 +90,21 @@
     "sameSite": "None"
   },
   {
-    "name": "EdgeLocation",
-    "value": "10.78,106.70",
-    "domain": "satchel.rei.com",
-    "path": "/",
-    "expires": 1761916659,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
     "name": "s_vnum",
-    "value": "1919510259585%26vn%3D1",
+    "value": "1919522630920%26vn%3D1",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1796390259,
+    "expires": 1796402630,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
     "name": "qualtricsSwimlaneCookie",
-    "value": "49",
+    "value": "30",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1796390259,
+    "expires": 1796402630,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
@@ -120,44 +120,24 @@
     "sameSite": "None"
   },
   {
-    "name": "AAM",
-    "value": "AAM%3D17802662%2C17811395",
+    "name": "dtm_token",
+    "value": "AQAHe263O9FkOQESP4WxAQBJhAABAQCbNwAVEQEBAJs3ABUR",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1764422259,
+    "expires": 1795970635,
     "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
+    "secure": true,
+    "sameSite": "Lax"
   },
   {
-    "name": "aam_uuid",
-    "value": "12383037729079493161468873014789679012",
+    "name": "dtm_consent",
+    "value": "UNSPECIFIED",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1764422259,
+    "expires": 1795970635,
     "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_caid",
-    "value": "92a17ec9-3d04-46f7-9632-2a3800cf4091",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1764425860,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_cavisit",
-    "value": "19a35444e59|",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1761833860,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
+    "secure": true,
+    "sameSite": "Lax"
   },
   {
     "name": "IR_gbd",
@@ -170,63 +150,123 @@
     "sameSite": "None"
   },
   {
-    "name": "bc_invalidateUrlCache_targeting",
-    "value": "1761830260471",
-    "domain": "www.rei.com",
+    "name": "AF_SYNC",
+    "value": "1761842638643",
+    "domain": ".rei.com",
     "path": "/",
-    "expires": 1761830860,
+    "expires": 1762451038,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
-  },
-  {
-    "name": "_scid",
-    "value": "_iQxKemlC8LR3zzeqEDkoQ85_asrJ52k",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796048260,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "Lax"
   },
   {
     "name": "IR_PI",
-    "value": "cf085e41-b592-11f0-a824-078501108c2c%7C1761916660333",
+    "value": "a181d592-b5af-11f0-b7e3-a19b6f65d436%7C1761929038332",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1796390260,
+    "expires": 1796402640,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
-    "name": "bluecoreNV",
-    "value": "true",
-    "domain": "www.rei.com",
+    "name": "EdgeLocation",
+    "value": "38.2545,-85.7595",
+    "domain": "satchel.rei.com",
     "path": "/",
-    "expires": 1791830261,
+    "expires": 1761929043,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
-    "name": "AF_SYNC",
-    "value": "1761830261718",
+    "name": "_caid",
+    "value": "bedaaf81-479b-466b-9d6c-0e35cd4ba8c4",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1762438661,
+    "expires": 1764438243,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
-    "name": "JSESSIONID",
-    "value": "_aM7AOQaRaaaoP--ydHbEHjaU86tq8s3YDRZyApp",
+    "name": "_cavisit",
+    "value": "19a36014093|",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1761846243,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "AMCV_F0A65E09512D2C440A490D4D%40AdobeOrg",
+    "value": "1585540135%7CMCIDTS%7C20392%7CMCMID%7C66406192069752094343025359620751819444%7CMCAAMLH-1762447451%7C7%7CMCAAMB-1762447451%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1761849851s%7CNONE%7CMCAID%7CNONE%7CMCSYNCSOP%7C411-20399%7CvVersion%7C4.4.0%7CMCCIDH%7C1668004890",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796402651,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_abck",
+    "value": "80A9C75E18739BD4D12B5E0FC4AB1596~0~YAAQj2zNF7LdRy+aAQAAnVsBNg6mo+ukJvVXK65s5aAb9se2lkoxj2o92ZXj6So+P/yosALYkY0WunL4AmEyfUzM0/E0gBjvelF+VLF9/0KkomD+c6BqBPrECaFYkmFRCfgGTFykUrdNmbUW5M32mZjwSDQmXcGdtACwb80eKxc5/RywmQKDdM8WezG2sKnewZDxL4ehD7QLTKawpXMyiuCck2XpyErv84a2t44xQgs0s0DvbkSWCH2jjo9C2Wj7ZVtDrnCQte77ypdFRR8ETy0+/u4uytKVTm7fPMWxJDV7NV1Wrux7MNluA/98EUEw6bMi6ORFbn7y6qjTYmBRY430LRJuUzY/qPRkNUnDpsZL6Ff5n9r1p4lU+trV+SrK5JU37IqE18OuWL5SoSlXNt+v4S3jXhxLQJxHkXTrcjrHQNUh/p5Ar77JayCqjL9jadtCJ+sF3H/riM7i6SQx/xnVX/ibqPTyytraIFsGOJmX0Sya+zyks0/llqwUOWd+4a8EIhQmX+RWdOPMBdIG+/3DynHwQ2yUizxX8arzavyDGRvgvY23p2m0C3Kg1dXCaUBnFxkwVjIjrxbhtX7ozhfQuhMUVDnQlowbAVb7rKZ9SSELpgl0WF2AFNfiWEwf2eWdEDqkR7yDP4UN+xUVpm/C~-1~-1~-1~AAQAAAAE%2f%2f%2f%2f%2f2jjlL57q32O832H+3Oajq80hDdjNku4GHF63HqWA9QatjC3QwqbQNvSrA8Hbg0Zl7tgvJ8f+U2R52WiOrrVLQlJP6R9nLg0Kn%2fO~-1",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378652,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "s_ips",
+    "value": "784",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "ConstructorioID_client_id",
+    "value": "fd5767e2-8dd8-4f25-b5b9-fbb7edfb6e4d",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378655,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "bm_lso",
+    "value": "3D7E2A9463B2D3A2B51B26D006143A4F18E4CAD1B59A8CEEF6D40C2CC8A5732B~YAAQj2zNF8zcRy+aAQAABFYBNgXJG+EHCkg2bNtT848zX8ywiK4uZH5vWB61zVHa/9qmXLgHwoS/r+ADImc94PqQZHJDMjxGTJJal0KyVM3doLlTbzcjPnAD8EYA8y7pGUN2cJU2Id9jplJ8qNSCPBRSyB2XVMO9FbAb96+016Q/d1AhDbXgc2wtwX4ErY1zmEiALBNZAo2CBkGvccWCOw5eWbNQG51oAKKp9mSvBFyjTm2HRRKIqAGZtbeTg57vOAjPZgkw5Hso7O5/pYyTc4qjxPQCC9hytmDYz7TTJpH7J/7SJ5jRtshsx6U/WUB0Sp8cCF09cBFv78DX9ILWTg8nRLfZmlIyKpWpAP5qt9mDadMSeW9by5pyK/uEG2K46u9TTi8asxY0gVVDjsxQcPy8qRoPCQbn18G4XiFSYxt2TIW+W1GprgSV6qI42fjQ2yKz3AdSJROn5fA=^1761842655724",
+    "domain": ".www.rei.com",
+    "path": "/",
+    "expires": 1764434655,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "rr_rcs",
+    "value": "eF5jYSlN9kgzSkw0tLA01jU1SjXVNTFJNta1TEpO1k0yNjOzSLEwMDIyMufKLSvJTBEwNDQ31jXUNQQAlLMOBA",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796402655,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "searchStores",
+    "value": "292",
     "domain": "www.rei.com",
     "path": "/",
     "expires": -1,
-    "httpOnly": true,
-    "secure": true,
+    "httpOnly": false,
+    "secure": false,
     "sameSite": "None"
   },
   {
@@ -240,18 +280,238 @@
     "sameSite": "None"
   },
   {
-    "name": "AMCV_F0A65E09512D2C440A490D4D%40AdobeOrg",
-    "value": "1585540135%7CMCIDTS%7C20392%7CMCMID%7C12589455173945713871456218240112515803%7CMCAAMLH-1762435070%7C3%7CMCAAMB-1762435070%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1761837470s%7CNONE%7CMCAID%7CNONE%7CMCSYNCSOP%7C411-20399%7CvVersion%7C4.4.0%7CMCCIDH%7C659866426",
+    "name": "s_tp",
+    "value": "2045",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1796390270,
+    "expires": -1,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
-    "name": "s_ips",
-    "value": "928",
+    "name": "_scid",
+    "value": "McZhLxF2cHHt7AyRnuTJGWnbLaFUtU8w",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796060662,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "bc_invalidateUrlCache_targeting",
+    "value": "1761842663205",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1761843263,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "QSI_HistorySession",
+    "value": "https%3A%2F%2Fwww.rei.com%2Flogin%3FtoUrl%3D%2Ff%2Fscd-outlet~1761842664796",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "bm_sc",
+    "value": "3~2~33257950~YAAQj2zNF37lRy+aAQAA4IwBNgUvYpGcih/zJERabPpZ5OCm/WcyXyPN0OMVVSVYTAQsW3+4aBHEVXjb5rnafBnOC5IB4DDy+hA2GsVZvcGPLnRx1R8JAgi9nP+me4dXacWYB58F/Nhu0EORL9tZ4zM7Bd22KX4tCGUeAFn6aaPF7ZiwIot7+2EsZJvyuDxwBzi9atbY5Xemq0cbzQZr3m1b1RUmkVsbg5aytSb0ii2RA66IsZCnTCKOyHoT9dBaBPL8/Q05ISgBeAcsphAaMLZUNJsZSRSv/CJztOcAi14ThNXcEY+G+oToTkQ3s4NxVhsm0RZvLCixp0GnahVhaqr6lvJcCTwFaD2SrAteuwlICMudKgsioRsdvomUsmrfVKSpyj+giuZDxavxoV0/C2TbPREgLcIh9ynn33yMYby+wt75KWSkR+SSkw7v0UdwaQK0V04I0A==",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1761843314,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "JSESSIONID",
+    "value": "xftZiTgR-6W9_uk67CrgPIlZSrJLSkB7_36IlxQU",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "mboxEdgeCluster",
+    "value": "34",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1761844527,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "OptanonConsent",
+    "value": "isGpcEnabled=0&datestamp=Thu+Oct+30+2025+09%3A44%3A28+GMT-0700+(Pacific+Daylight+Time)&version=202508.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=4fb7e208-0fd0-4093-ba62-c695c738134e&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0004%3A1%2CC0001%3A1%2CC0005%3A1%2CC0002%3A1%2CC0003%3A1&AwaitingReconsent=false",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378668,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "s_ppv",
+    "value": "your%2520account%253Alogin%2C38%2C38%2C784%2C1%2C2",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "s_invisit",
+    "value": "true",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1761844468,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "IR_17195",
+    "value": "1761842668270%7C0%7C1761842668270%7C%7C",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "mp_rei_us_mixpanel",
+    "value": "%7B%22distinct_id%22%3A%20%2219a36018dec5aa-00cea6a1ae29958-8545021-faef0-19a36018dedbf%22%2C%22bc_persist_updated%22%3A%201761842663483%2C%22bc_last_opaque_id%22%3A%2085621263%7D",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378668,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_scid_r",
+    "value": "SkZhLxF2cHHt7AyRnuTJGWnbLaFUtU8wWdzWWA",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796060668,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_uetsid",
+    "value": "a1b662b0b5af11f0a0581949da821977|19mww3h|2|g0l|0|2129",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1761929068,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "s_ecid",
+    "value": "MCMID%7C66406192069752094343025359620751819444",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796402668,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_pin_unauth",
+    "value": "dWlkPU5EYzRPRFV5TWpVdFkyVmlNQzAwTkdabExUZzBaREF0WkRjeE9HRTNOelZsWW1OaA",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378668,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_mibhv",
+    "value": "anon-1761842638120-2841427052_5274",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1793378669,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "bluecoreNV",
+    "value": "true",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1791842669,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_uetvid",
+    "value": "a1b69190b5af11f092803d6ace557ce8|1ah95wd|1761842669968|3|1|bat.bing.com/p/conversions/c/l",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1795538669,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "afUserId",
+    "value": "4dba471d-1805-4682-b7d3-e2e56e32edaf-p",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1796402670,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "_fbp",
+    "value": "fb.1.1761842644915.625782434497254914",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1769618693,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "s_nr",
+    "value": "1761842693264-New",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1764434693,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "utag_main",
+    "value": "v_id:019a360110eb005e9115181b98ec03050001400d00847$_sn:1$_se:14$_ss:0$_st:1761844493257$ses_id:1761842630893%3Bexp-session$_pn:4%3Bexp-session$vapi_domain:rei.com$_prevpage:your%20account%3Alogin%3Bexp-1761846293267$_prevtemp:your%20account%3Bexp-1761846268125$dc_visit:1$dc_event:1%3Bexp-session",
+    "domain": ".rei.com",
+    "path": "/",
+    "expires": 1793378693,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "s_sq",
+    "value": "reiprod%3D%2526c.%2526a.%2526activitymap.%2526page%253Dyour%252520account%25253Alogin%2526link%253DSign%252520in%2526region%253DLogon%2526pageIDType%253D1%2526.activitymap%2526.a%2526.c%2526pid%253Dyour%252520account%25253Alogin%2526pidt%253D1%2526oid%253DSign%252520in%2526oidt%253D3%2526ot%253DSUBMIT",
     "domain": ".rei.com",
     "path": "/",
     "expires": -1,
@@ -261,10 +521,40 @@
   },
   {
     "name": "_gcl_au",
-    "value": "1.1.1989472580.1761830260.1014749738.1761830285.1761830290",
+    "value": "1.1.1934974688.1761842644.1923730306.1761842645.1761842693",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1769606260,
+    "expires": 1769618644,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "REI_SSL_SESSION_ID",
+    "value": "eyJ0b2tlbl92ZXJzaW9uIjoiMi4wIiwiYWxnIjoiRVMyNTYiLCJraWQiOiJSMDAwMDAwMDAwMSJ9.eyJzdWIiOiI1MTMwNzAyNTYyNiIsInJlaS5jb21cL2NzcmYiOiIzODY5MzY4ODEzODM3MDI4MjI5IiwiYXV0aF90aW1lIjoiMjAyNS0xMC0zMFQxNjo0NDo1My45ODgyNzkzMzRaIiwiZXhwIjoxNzY0NDM0NjkzLCJpYXQiOjE3NjE4NDI2OTMsIm5vbmNlIjoiQmJGa0JqQmFXb1Vsd3RKQnhXWTljdz09In0.vUU4e9sTKpwTV9aYfSqFZKKV93-SpYRk3syxvoiitf5OVauGDPOtN1qszrnSVVnpNfwj7WUuJULcfaIQZ1gnZg",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1764434696,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "myStoreId",
+    "value": "158",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1793378696,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "None"
+  },
+  {
+    "name": "myStoreIdSet",
+    "value": "1630063325000",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1793378696,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
@@ -281,80 +571,80 @@
   },
   {
     "name": "rei_user_info",
-    "value": "%7EUndefined%7E",
+    "value": "DARREN%7EPrimary%7E-1",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1793366291,
+    "expires": 1793378696,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "qqZ5m26Q",
-    "value": "A0hiRDWaAQAADunB0uZz7FTirEv_IHCICtdO2qawj0CPHnQi3MlF-DWoqgECAWgc7UqcuJDgwH8AAEB3AAAAAA|1|1|2e1d36f39aab7dd7b08ce6d4fee3c6217387e449",
+    "value": "AyF2ATaaAQAAUrwPbR_CnAfhPQPCIR2VGz8BuSFQrQS5vEA6Shia5W5lPBbyAaw7VLicuJDgwH8AAEB3AAAAAA|1|1|226b3dc79fb51ae3ecb2b41c6354894381d90c23",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1796390291,
+    "expires": 1796402696,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
-    "name": "REI-Test-Segment",
-    "value": "95 percent passthrough",
+    "name": "m_pages",
+    "value": "30",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1764422292,
+    "expires": 1764434698,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "akaas_Search",
+    "value": "1764434695~rv=32~id=019d5deed0f49dc1ba021b70aa0c5946~rn=",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": 1764434698,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "bm_so",
-    "value": "60383FA108AF91A141BEBAC259BAEEE340AF047B2528E3C1A1360F35E94812D2~YAAQZx0gF4RbrjOaAQAAZcVENQV0useiNLI4Tqy5ZQmXRMYUjdGtQb4d3FTDaaOVyHHhcEF3J72fVM7Iv/20ArqMfsx3FtMbItmO3HyTL57pbyCD9z0W9HQ77wzJMJdHUBeVtmcC7V/YW0dlwlFLH7wKoSEnVmcJzIqcCP8WfxccrrSCk4xjUJbtKV6JFxD09TtECU4/wwvo2Mt1bgY4e/zFDtz5cHClxN4v11ow4xEjUh0MM2JnU1HVwuqQPl1cZkrTskPlmqEE2NfsPxrbC5LzEAx/qum/OZSMi40+quwZoygr+kke7kn3a9BDi4yrQiRcIQgk3YXzwpweawMYwUVo1IBEsweZ7yMII5r3x3uWryzaKEX6UcWzHGVd03RCCSJXrojQele7bLtEpafFW9+eJye4mTg0Ji5bSxQSGOe9+Er/WuICPK6lP+T2elNIXqQ2vjkmcfPIi3g=",
+    "value": "C68A6656EAA061D7E75F6EF6CCDBD539C62A280709DDFC4C12458BA760FB8301~YAAQj2zNF674Ry+aAQAAEw8CNgWRfY0wQ49RwvTGxrFcNx0yLs8Uuxvj1S0r6lxGkNY1TGeYyKVVPs7h7AVOCkMW9lQpXspZBcMwYJIbrsv+0rNPGQ+n5BwDfFaeTZCRtfx3JDYMAepUaIE2KNfPHNOnP6z8gImWSF3CHdlYZ0cVMElh/F/gOwfxGLEokFotmemXT54i3rVPxBKh1yGu8606Iuf7EwzJMVO0ZacWRdUlarFZGN8RsqnCuFYR6yNIfhs8giz8l5NwFflBxcDqaq9oigiJDlvcSWJOH97bKDybpvFhZk3GD9lunrx4bYm57nucw9OxUlVZEY0wth82F5GfoXzWwHau6obFDsmCyiqZLUDpiJ3snj5Ey0Eu4z8mw2BSwN6Ue9FlQfFFG6eDjbuIDee2wsLf5OzZ3JPo36ry0pUX0p4l5IcsZeBMPR2Sg+qDR00BaBld/Tk=",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761916692,
+    "expires": 1761929098,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "bm_sz",
-    "value": "B46DEEBA2D9C4F4F9F4C499A0379A753~YAAQZx0gF4ZbrjOaAQAAZcVENR3aiSGnqPa7Xhh60xl+sWD1z+zNNXfbXt0szwTspdH2JKDj2wbRWDGlA02yDj01eH6pMgeCUTg/rQSS/THFJaGsDO6wBY/ZjVLyiyXyk5Ichp+4JTM2FbmnXgQyMRn3zI43RLhF+Q/HYmDRyS7nlObMGGiIxkq97Lv2NaYdwF+8IIQGMvhBXUiToVARIJW02a+cGhwtf5G7Afqga5kMCUOJeZaVP6v/uf5+E9guQXn9AWbwjKw5mWxNX34m6Jy4bgrAoK2NgLaC55TSs7pTLpavl14pdaKLOBg1B9ENJ4Ka9kqr57HwWrdotFx4W2zC6TE+IflOVFqiP4T2e/YEzIPb+jylk3uE8vMTCH5LGcxGtZkjKhhVXv+zY1/y9KYM3yKzmk0AwimARg==~3228742~3750214",
+    "value": "612A1088B7B08AA20C2A6971D0C37B83~YAAQj2zNF7D4Ry+aAQAAEw8CNh1yh6UZo0Qn99syWDOhWnkbELpHm9FzcDLVYMQKil4XVDQIBjn/dpaQ+Ds0xSSUJkeU/fQcf85ejPIwKmlS/HKHDfnhP/EBOPGSmeo+tRH4TpkosEH5dvWBQCeXBsSbnxCDq8B7hDiiePeHKOLyugxf7CL80kJlsANihZLjBJZHgt6OfaVtHDfw2rUWlNJASlNbz+qbbMaoAyex9C00dWbmKNoNy79wnCS2NhimvJFZcGCYjrW2XTQLYQf3vUOFzDGIKKmgB3QVZ4ImbkWJtYUFWg5WaSnRZDaOFwOpM09VhdfGeQDey1U/lk9oSFLV8cdCoLPUK1R7bRGU1VnnrpvFDvWDXZbfk9NMhpGstEHbwnYGkhDnaQIXwH+jq4V4Hb4vtLB/QogHRB61cgtVe6qHuNo=~4471106~3618352",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761844655,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "_abck",
-    "value": "E83FF20A7CC6A2FD37ED55B3E8B4AC66~0~YAAQZx0gF59brjOaAQAAD8ZENQ4sdTHwmRBbcLVf9R5c2jb1WuJhYJD0zZLvYBcC7Ccmz8t1nIowQ8hm//EIvgVZSE/GJ0MSGBWBhIXsyOghdCpxgGJYKIyvFTBGVMfsl4nwJ63YiKc2ePfq/Z1fdhMgLXeDpuKV0RauMbvU44AzIma/vnRa5xsc8GD6RrGTR7R2x2JsNXi4flk3hJu6YOWq5JT9GgroIbO12jJnQH85nNyY6NHyeTcF3yZNaDsFvBcmbv1pPvUxUvAwiUzUmaZtL9Qh+dP1biHfimMu2f6W013PdAba48D1afwXFD8fvGQKqrj4F6RBvmJ0Ww1aS5Mbu/BOZZK/bRkkk9TG54wnZxaXFroZpvXuFdqsmxSf9GtzK5HXvV4RZQ8ASOzp+vhszZDWXE8lrqnfSAvNSYETnDFC3apqwR0XX3gmpFgWtE1ZohbJ0HTICObrSwCKzCmhEULvpNdU1b6Dm8jvf6iyRkrVO/3Kuec3QuN8ptwRr0j4cWWgY4+FK0WAqsNX28VlUExcG3RLIITZn7xmEq5tChoppCpGDnfnFskIM3vOR6e8LTtFka8Qw8xHPzVNk6tpA7Hgl5G6epI3zHvIGnkHj0EYjGsatZnDN0m83cDchK3TkOgcGmXQ47w23W8b4D0l~-1~-1~-1~AAQAAAAE%2f%2f%2f%2f%2f0NU28ISe%2fr+jx%2fef0TgvLGPUNVUOEjbgYgJpw6UPa9%2fRHdOGwuQI9YYB%2flpaSnnHbDKcDfC3DEydkNZT8NEyl6o92Y4B+VjgkF%2f~-1",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366292,
+    "expires": 1761857023,
     "httpOnly": false,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "bm_s",
-    "value": "YAAQZx0gF9ZbrjOaAQAA/chENQStoeUpKpqWwHDqhplmq5mfnbiPCTmpl5AeYtphIdvQ6WIwk1zEUrcspnuSukUS3fmEv0HPaH9hsmrTHwoGJI3++05jrsxCUtD+8eX/RUHj/vr6UBpn69NQnPLhdsjHKCZhbLcsyRNZpIJr3hK8wXQEjhnKtev9ghBseuqnQRQSt4ovFkTVxT+qvRuwzoTQkf6KuyapkEaa1pZCYpg+Q9i2Jhp4wcAt0jtzafg05CT9vMYCKwIkpJ3WSQjQCSwyIWxa6fLN5KO5rR97s7JGmn6M1Q5+OtzV3vS1tLsfQglQlEgsxRvyb+n4UlMT72BCB9oEPO+v2cD1S0SEekU+j3/SBfDC9YrBrIyNJ9wyEhXvnloijmn/LJcrF2cMDonfQcSV1yAi+6itdYQdvZ0ISPGmP1p9KHXTKjZCh8NNq+DiW1ZFyf3FMpLrkuynzPfFDFqWPCzIgdrfsjjbyeKAHrKY7NmkX2CuhDJkBN2p199z8HUbSL69+/c2B890xLaU5ugZYShkw/JONsqrL0DcVaETuTKoOjnv2g==",
+    "value": "YAAQj2zNF5D5Ry+aAQAAJxUCNgTW8XH6d2LC/l/W9EE4txr3fbnl2azafFREihYM8dwIWqDjS3ucQQERtWW2P+mwNNkIUrkQXp5q3V7qVI9rwK5osB8ly+kHvMGBV1WmCoyC6EmtuMtGAag3KLge59aI/mOO5riaTrogdMfuCGIWOUzi2strPTzQ7DPVzgLRH2T4TJszBg1Di1tQ5VD5u25IXtpjxzh6eFh7ya7ccrrRz/YBCAU+NC/PRagq0A2HiCGlN6ny2cdXENIZs0QZfMys952dg67EfHUh6NDQWWzYkYL4ptlPdxGI1KgjnKAWc9+f4c69v61K79M7DGbJQksT0hNmonjyytg7/F0nkJrhkauvLTfGXWnq88j04IF7dD/kOuPujSfsBvr3wRW5tSv+IS7oVl8XkzcJDocBAevmXfzEdWVIe+xwhSfw/Bi+Luv/AL4TGv1A2A1ILj0IsrhISdYkrr4kx3zBcJPdtNhsXJ4kD/U89GnqvzBTuPxWbAN4rWcsOtDDvceB45LsrKd0MmLSrEn3gsijr1gzPAJltTydznb3Y5pSsw==",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1764508693,
+    "expires": 1764521100,
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
   },
   {
     "name": "REI_DEVICE_ID",
-    "value": "9f8cf0d5c5a1ea61edfdd253fcad892d|e8643e39ddfc81f3cdb3a528f3a57eec2b5e710f41e8fc0ea72053139ef37e1d",
+    "value": "47a4112bf10ad2c8367d72abe6324250|49ef21e1a52ce7e0683a435c1df7de190d0c929e0419ecc52cd933b92f0af330",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1793366293,
+    "expires": 1793378700,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
@@ -364,317 +654,47 @@
     "value": "1",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1764422293,
+    "expires": 1764434700,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
-    "name": "mboxEdgeCluster",
-    "value": "38",
+    "name": "bm_sv",
+    "value": "453C6C374134543C985B6503AB1A70CC~YAAQj2zNF6z5Ry+aAQAALhYCNh22+rrjz9Joci7sASTXVDxZ0NtJbZbVibXHJ6SyNRNW4xbLBUdhfIF1jl38EMIQtYKEH2+hbcPnZCQ8IgmaM8IO5oyM/CJAwZhrOJGJyeEyhYM0+imQY5UEL3SXMUc/Tt67vyyrjiXB+6tkcfYtGTWdkoVfE52HTfPF18VwQZUptp1FW2dh5boKxab2oH56ptbgP+jI/LHP1M4JdSIoSmV0uACaWjzuSzfLPQ==~1",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761832153,
+    "expires": 1761849828,
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "searchURL",
+    "value": "/f/scd-outlet?storeId=8000&toUrl=%252Ff%252Fscd-outlet",
+    "domain": "www.rei.com",
+    "path": "/",
+    "expires": -1,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
     "name": "mbox",
-    "value": "PC#be6a0e87-960a-4b40-86d5-683184e5945d.35_0#1761916653|session#be6a0e87-960a-4b40-86d5-683184e5945d#1761832154",
+    "value": "PC#c6cc592c-24c4-4df7-b02c-4a603e4456d1.35_0#1761929020|session#c6cc592c-24c4-4df7-b02c-4a603e4456d1#1761844562",
     "domain": ".rei.com",
     "path": "/",
-    "expires": 1761916653,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "myStoreId",
-    "value": "158",
-    "domain": "www.rei.com",
-    "path": "/",
-    "expires": 1793366294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "myStoreIdSet",
-    "value": "1761830294254",
-    "domain": "www.rei.com",
-    "path": "/",
-    "expires": 1793366294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "rr_rcs",
-    "value": "eF5j4cotK8lMETA0NDfWNdQ1ZClN9jAxSza2ME9N0zU3tzTSNUlLNQGyEo11Uy3NzCxSTA0sDS2NAI01Dcs",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796390294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "bm_lso",
-    "value": "60383FA108AF91A141BEBAC259BAEEE340AF047B2528E3C1A1360F35E94812D2~YAAQZx0gF4RbrjOaAQAAZcVENQV0useiNLI4Tqy5ZQmXRMYUjdGtQb4d3FTDaaOVyHHhcEF3J72fVM7Iv/20ArqMfsx3FtMbItmO3HyTL57pbyCD9z0W9HQ77wzJMJdHUBeVtmcC7V/YW0dlwlFLH7wKoSEnVmcJzIqcCP8WfxccrrSCk4xjUJbtKV6JFxD09TtECU4/wwvo2Mt1bgY4e/zFDtz5cHClxN4v11ow4xEjUh0MM2JnU1HVwuqQPl1cZkrTskPlmqEE2NfsPxrbC5LzEAx/qum/OZSMi40+quwZoygr+kke7kn3a9BDi4yrQiRcIQgk3YXzwpweawMYwUVo1IBEsweZ7yMII5r3x3uWryzaKEX6UcWzHGVd03RCCSJXrojQele7bLtEpafFW9+eJye4mTg0Ji5bSxQSGOe9+Er/WuICPK6lP+T2elNIXqQ2vjkmcfPIi3g=^1761830294401",
-    "domain": ".www.rei.com",
-    "path": "/",
-    "expires": 1764422294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "rrUserId",
-    "value": "feaaa14654307624f580c2bf429f45e9d331a1344a375ee262201a7cdcdbae11",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796390294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "s_tp",
-    "value": "8253",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": -1,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "s_ppv",
-    "value": "rei%253Ahome%2C11%2C11%2C928%2C1%2C8",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": -1,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "s_invisit",
-    "value": "true",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1761832094,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "REI_SSL_SESSION_ID",
-    "value": "eyJ0b2tlbl92ZXJzaW9uIjoiMi4wIiwiYWxnIjoiRVMyNTYiLCJraWQiOiJSMDAwMDAwMDAwMSJ9.eyJzdWIiOiI1MTMwNzAyNTYyNiIsInJlaS5jb21cL2NzcmYiOiIyNzgxNjQ3MzEzMzk4NDUyOTE1IiwiYXV0aF90aW1lIjoiMjAyNS0xMC0zMFQxMzoxODowOS44NzA3MzU0NDhaIiwiZXhwIjoxNzY0NDIyMjg5LCJpYXQiOjE3NjE4MzAyODksIm5vbmNlIjoiQmJGa0JqQmFXb1Vsd3RKQnhXWTljdz09In0.mFW0OBlpnkNkUJuGUm7wb_VGQ45insCNkWiYOm4-8FSGpqxONhLnlj9tjpxPatD6CHAg25Nm3bCrzMweV6oisw",
-    "domain": "www.rei.com",
-    "path": "/",
-    "expires": 1764422294,
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "bm_sv",
-    "value": "C80DCC7E7BECC1B4458DE5917650F673~YAAQZx0gF1hcrjOaAQAA585ENR3HAtyiLF1cwbvY+GeOdUF/VDAUkdhhX/S0JQD3fVsnTTUdJoOqQIbi6afwb+vnUApaOpUueaAtJKOpuJANxwAeG6pV4o0uyhvOR3dYrbYbVd2rGJ9cLiQjQaxXvCw1YZh4XyF1af7tzGnoRfWKrOpBvksWNx5+0FmDpYkyWCkHK6/tbnNcjw6xSQo56xgVvOYJn1tIcO14xLbShUFxl91fRngJCWyjJlrwEA==~1",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1761837457,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "IR_17195",
-    "value": "1761830294772%7C0%7C1761830294772%7C%7C",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": -1,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "mp_rei_us_mixpanel",
-    "value": "%7B%22distinct_id%22%3A%20%2219a35444e8766e-072af0c91fe562-8545021-141f20-19a35444e88dbc%22%2C%22bc_persist_updated%22%3A%201761830260879%2C%22bc_last_opaque_id%22%3A%20-362541329%7D",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_scid_r",
-    "value": "-KQxKemlC8LR3zzeqEDkoQ85_asrJ52kYzjx4Q",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796048294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "Lax"
-  },
-  {
-    "name": "ConstructorioID_client_id",
-    "value": "5eebd982-3e85-4999-9a67-14a931598260",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366294,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_mibhv",
-    "value": "anon-1761830260381-2460051551_5274",
-    "domain": "www.rei.com",
-    "path": "/",
-    "expires": 1793366294,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "_uetsid",
-    "value": "cfd46200b59211f0a6228fa578b8237e|1ktcqi7|2|g0l|0|2129",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1761916694,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "s_sq",
-    "value": "%5B%5BB%5D%5D",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": -1,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "s_ecid",
-    "value": "MCMID%7C12589455173945713871456218240112515803",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796390295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_fbp",
-    "value": "fb.1.1761830260491.878349281263065285",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1769606295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_pin_unauth",
-    "value": "dWlkPU9UWTNORGM0TURNdE1qY3dNeTAwWm1KbUxUaGlNV1l0WlRNeVpUZ3hZalZsTURVNQ",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "dtm_token",
-    "value": "AQANEy8SnHq3DAE9OHPUAQBJhAABAQCbNEVGqQEBAJs0RUap",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1795958295,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "Lax"
-  },
-  {
-    "name": "dtm_consent",
-    "value": "UNSPECIFIED",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1795958295,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "Lax"
-  },
-  {
-    "name": "QSI_HistorySession",
-    "value": "https%3A%2F%2Fwww.rei.com%2F~1761830260594%7Chttps%3A%2F%2Fwww.rei.com%2Flogin%3FtoUrl%3D%2F~1761830272176%7Chttps%3A%2F%2Fwww.rei.com%2F%3FstoreId%3D8000%26toUrl%3D%252F~1761830295435",
-    "domain": "www.rei.com",
-    "path": "/",
-    "expires": -1,
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None"
-  },
-  {
-    "name": "afUserId",
-    "value": "4c56643a-f011-4789-8807-b57e8ebb3b4d-p",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1796390295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "OptanonConsent",
-    "value": "isGpcEnabled=0&datestamp=Thu+Oct+30+2025+06%3A18%3A15+GMT-0700+(Pacific+Daylight+Time)&version=202508.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=044727a0-ab25-4f81-8920-23b2064cbf6b&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0004%3A1%2CC0001%3A1%2CC0005%3A1%2CC0002%3A1%2CC0003%3A1&AwaitingReconsent=false",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "Lax"
-  },
-  {
-    "name": "s_nr",
-    "value": "1761830295504-New",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1764422295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "utag_main",
-    "value": "v_id:019a35444b5300360cea483235c403050001400d00945$_sn:1$_se:17$_ss:0$_st:1761832095498$ses_id:1761830259540%3Bexp-session$_pn:3%3Bexp-session$vapi_domain:rei.com$_prevpage:rei%3Ahome%3Bexp-1761833895506$_prevtemp:homepage%3Bexp-1761833894655",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1793366295,
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None"
-  },
-  {
-    "name": "_uetvid",
-    "value": "cfd486e0b59211f09b2989114e002c00|du01lm|1761830296064|3|1|bat.bing.com/p/conversions/c/h",
-    "domain": ".rei.com",
-    "path": "/",
-    "expires": 1795526296,
+    "expires": 1761929020,
     "httpOnly": false,
     "secure": false,
     "sameSite": "None"
   },
   {
     "name": "_dd_s",
-    "value": "rum=0&expire=1761831193497",
+    "value": "rum=0&expire=1761843600095",
     "domain": "www.rei.com",
     "path": "/",
-    "expires": 1761831196,
+    "expires": 1761843601,
     "httpOnly": false,
     "secure": false,
     "sameSite": "Strict"
