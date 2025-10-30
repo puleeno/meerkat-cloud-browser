@@ -12,6 +12,7 @@ class Account(db.Model):
 	total_orders = db.Column(db.Integer, nullable=False, default=0)
 	last_checked_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+	cookies_json = db.Column(db.Text)  # lưu cookie jar dạng JSON
 
 	stats = db.relationship("AccountYearStat", backref="account", lazy=True, cascade="all, delete-orphan")
 

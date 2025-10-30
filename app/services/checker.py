@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List
 import os
 import random
+import json
 
 from flask import current_app
 
@@ -212,9 +213,9 @@ def _fetch_orders_per_year(email: str, password: str):
 	rei_cookies = [c for c in cookies if ".rei.com" in (c.get("domain") or "")]
 	can_login = len(rei_cookies) > 0
 	if not can_login:
-		return False, {}
+		return False, {}, []
 
-	# Lưu cookie jar
+	# Lưu cookie jar ra file (tuỳ chọn) và trả về để caller lưu DB
 	save_cookies(email, rei_cookies)
 
 	# Tính năm từ 2014 đến hiện tại
@@ -223,7 +224,7 @@ def _fetch_orders_per_year(email: str, password: str):
 
 	# Gọi Scrapy để lấy thống kê theo năm
 	per_year = fetch_orders_per_year_with_scrapy(years, rei_cookies)
-	return True, per_year
+	return True, per_year, rei_cookies
 
 
 def _process_accounts(app, emails: List[str]) -> None:
@@ -232,7 +233,7 @@ def _process_accounts(app, emails: List[str]) -> None:
 			account = Account.query.filter_by(email=email).one_or_none()
 			if account is None:
 				continue
-			can_login, per_year = _fetch_orders_per_year(account.email, account.password)
+			can_login, per_year, cookies = _fetch_orders_per_year(account.email, account.password)
 
 			total = 0
 			for year, count in (per_year or {}).items():
@@ -247,6 +248,11 @@ def _process_accounts(app, emails: List[str]) -> None:
 			account.can_login = bool(can_login)
 			account.total_orders = int(total)
 			account.last_checked_at = datetime.utcnow()
+			if cookies:
+				try:
+					account.cookies_json = json.dumps(cookies, ensure_ascii=False)
+				except Exception:
+					pass
 			db.session.commit()
 			time.sleep(0.2)
 
