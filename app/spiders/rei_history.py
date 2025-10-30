@@ -29,9 +29,11 @@ class ReiHistorySpider(scrapy.Spider):
 			)
 
 	def parse_history(self, response: scrapy.http.Response, year: int):
+		raw = response.text
 		try:
-			data = json.loads(response.text)
+			data = json.loads(raw)
 			history = data.get("history") or []
-			yield {"year": year, "orders_count": int(len(history))}
+			orders_count = int(len(history))
 		except Exception:
-			yield {"year": year, "orders_count": 0}
+			orders_count = 0
+		yield {"year": year, "orders_count": orders_count, "raw_json": raw}

@@ -29,6 +29,12 @@ def send_message(text: str) -> None:
 
 def send_photo(photo_path: str, caption: Optional[str] = None) -> None:
 	if not _enabled():
+		# Nếu không bật, vẫn cố gắng dọn dẹp file
+		try:
+			if os.path.exists(photo_path):
+				os.remove(photo_path)
+		except Exception:
+			pass
 		return
 	try:
 		with open(photo_path, "rb") as f:
@@ -38,5 +44,10 @@ def send_photo(photo_path: str, caption: Optional[str] = None) -> None:
 				files={"photo": f},
 				timeout=30,
 			)
-	except Exception:
-		pass
+	finally:
+		# Luôn cố gắng xoá file sau khi gửi hoặc khi có lỗi
+		try:
+			if os.path.exists(photo_path):
+				os.remove(photo_path)
+		except Exception:
+			pass

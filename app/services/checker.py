@@ -83,15 +83,15 @@ def _maybe_random_browse(page):
 
 
 def _slow_type(locator, value: str):
-	"""Gõ ký tự có độ trễ để giống người dùng."""
+	"""Gõ ký tự có độ trễ để giống người dùng (đã rút ngắn)."""
 	try:
 		locator.click()
 		locator.fill("")
 		for ch in value:
-			locator.type(ch, delay=random.randint(110, 260))
-			# thỉnh thoảng dừng nhẹ lâu hơn
-			if random.random() < 0.18:
-				locator.page.wait_for_timeout(random.randint(160, 380))
+			locator.type(ch, delay=random.randint(40, 90))
+			# nghỉ ngắn thỉnh thoảng
+			if random.random() < 0.1:
+				locator.page.wait_for_timeout(random.randint(60, 120))
 	except Exception:
 		# fallback fill nếu type thất bại
 		try:
@@ -340,8 +340,8 @@ def _fetch_orders_per_year(email: str, password: str):
 	now = datetime.utcnow().year
 	years = list(range(2014, now + 1))
 
-	per_year = fetch_orders_per_year_with_scrapy(years, rei_cookies, headers=headers)
-	return True, per_year, rei_cookies, headers
+	per_year_counts, raw_map = fetch_orders_per_year_with_scrapy(years, rei_cookies, headers=headers)
+	return True, per_year_counts, rei_cookies, headers, raw_map
 
 
 def _process_accounts(app, emails: List[str]) -> None:
@@ -350,7 +350,7 @@ def _process_accounts(app, emails: List[str]) -> None:
 			account = Account.query.filter_by(email=email).one_or_none()
 			if account is None:
 				continue
-			can_login, per_year, cookies, headers = _fetch_orders_per_year(account.email, account.password)
+			can_login, per_year, cookies, headers, raw_map = _fetch_orders_per_year(account.email, account.password)
 
 			total = 0
 			for year, count in (per_year or {}).items():
@@ -361,6 +361,16 @@ def _process_accounts(app, emails: List[str]) -> None:
 					db.session.add(stat)
 				else:
 					stat.orders_count = int(count)
+				if raw_map:
+					stat.raw_json = json.dumps(raw_map[year], ensure_ascii=False)
+
+			# Gửi log Telegram theo từng năm
+			try:
+				if per_year:
+					years_text = "\n".join([f"- {y}: {per_year[y]} đơn" for y in sorted(per_year.keys())])
+					send_message(f"Kết quả đơn hàng cho {email}:\n{years_text}\nTổng: {total}")
+			except Exception:
+				pass
 
 			account.can_login = bool(can_login)
 			account.total_orders = int(total)

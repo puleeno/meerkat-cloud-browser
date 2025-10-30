@@ -38,9 +38,6 @@ def dashboard():
 
 @admin_bp.post("/upload")
 def upload_accounts():
-	# Trì hoãn import để tránh yêu cầu playwright khi chạy CLI/migrate
-	from .services.checker import enqueue_accounts_check
-
 	content = request.form.get("accounts_text", "")
 	file = request.files.get("accounts_file")
 
@@ -70,8 +67,7 @@ def upload_accounts():
 		acc.last_checked_at = None
 	db.session.commit()
 
-	enqueue_accounts_check([email for email, _ in pairs])
-	flash(f"Đã lưu {created} tài khoản mới. Batch kiểm tra đã được xếp hàng.", "success")
+	flash(f"Đã lưu {created} tài khoản mới. Bạn có thể chạy batch từ nút 'Chạy batch tất cả tài khoản' hoặc CLI.", "success")
 	return redirect(url_for("admin.dashboard"))
 
 

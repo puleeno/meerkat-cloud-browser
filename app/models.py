@@ -8,7 +8,7 @@ class Account(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	email = db.Column(db.String(255), unique=True, nullable=False)
 	password = db.Column(db.String(255), nullable=False)
-	can_login = db.Column(db.Boolean, nullable=False, default=False)
+	can_login = db.Column(db.Boolean, nullable=True)  # null = chưa kiểm tra
 	total_orders = db.Column(db.Integer, nullable=False, default=0)
 	last_checked_at = db.Column(db.DateTime)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -25,6 +25,7 @@ class AccountYearStat(db.Model):
 	account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), nullable=False)
 	year = db.Column(db.Integer, nullable=False)
 	orders_count = db.Column(db.Integer, nullable=False, default=0)
+	raw_json = db.Column(db.Text)  # lưu toàn bộ response JSON theo năm
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 	__table_args__ = (

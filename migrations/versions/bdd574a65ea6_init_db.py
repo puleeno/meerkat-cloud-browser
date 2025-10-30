@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
-    sa.Column('can_login', sa.Boolean(), nullable=False),
+    sa.Column('can_login', sa.Boolean(), nullable=True),
     sa.Column('total_orders', sa.Integer(), nullable=False),
     sa.Column('last_checked_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
