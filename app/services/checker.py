@@ -95,10 +95,10 @@ def _slow_type(locator, value: str):
 		locator.click()
 		locator.fill("")
 		for ch in value:
-			locator.type(ch, delay=random.randint(20, 60))
+			locator.type(ch, delay=random.randint(5, 50))
 			# nghỉ rất ngắn ngẫu nhiên
 			if random.random() < 0.08:
-				locator.page.wait_for_timeout(random.randint(30, 80))
+				locator.page.wait_for_timeout(random.randint(15, 60))
 	except Exception:
 		# fallback fill nếu type thất bại
 		try:
@@ -422,8 +422,8 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[bool, list
 
 				page.goto("https://www.rei.com/", wait_until="domcontentloaded")
 				send_message(f"Bắt đầu kiểm tra tài khoản: {email}")
-				_humanize_page(page)
-				_maybe_random_browse(page)
+				_humanize_page(page)                      # Cái này giả lập Scroll màn hình
+				_maybe_random_browse(page)              # Tắt chỗ này nếu muốn loại bỏ giả lập lướt 1 page trước khi vào login
 				try:
 					link = page.locator("a.account-sign-in-link").first
 					link.wait_for(state="visible", timeout=20000)
