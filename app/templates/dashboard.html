@@ -10,6 +10,10 @@
 		<button type="submit">Lưu và chạy batch</button>
 	</form>
 
+	<form action="{{ url_for('admin.run_all') }}" method="post" style="margin-top:12px;">
+		<button type="submit">Chạy batch tất cả tài khoản</button>
+	</form>
+
 	<h2 style="margin-top:24px;">Tài khoản</h2>
 	<table>
 		<thead>

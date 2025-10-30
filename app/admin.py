@@ -73,3 +73,15 @@ def upload_accounts():
 	enqueue_accounts_check([email for email, _ in pairs])
 	flash(f"Đã lưu {created} tài khoản mới. Batch kiểm tra đã được xếp hàng.", "success")
 	return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.post("/run-all")
+def run_all():
+	from .services.checker import enqueue_accounts_check
+	emails = [a.email for a in Account.query.all()]
+	if not emails:
+		flash("Chưa có tài khoản nào để chạy.", "warning")
+		return redirect(url_for("admin.dashboard"))
+	enqueue_accounts_check(emails)
+	flash(f"Đã xếp batch cho {len(emails)} tài khoản.", "success")
+	return redirect(url_for("admin.dashboard"))
