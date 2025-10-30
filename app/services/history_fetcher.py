@@ -1,10 +1,14 @@
 from typing import Dict, List
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from ..spiders.rei_history import ReiHistorySpider
 
 
 def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict]) -> Dict[int, int]:
+	try:
+		from scrapy.crawler import CrawlerProcess  # lazy import
+		from ..spiders.rei_history import ReiHistorySpider  # lazy import
+	except Exception:
+		# Scrapy chưa được cài hoặc môi trường thiếu dependency; trả về rỗng để app không lỗi
+		return {}
+
 	results: Dict[int, int] = {}
 
 	process = CrawlerProcess(settings={
@@ -17,8 +21,8 @@ def fetch_orders_per_year_with_scrapy(years: List[int], cookies: List[dict]) -> 
 		count = int(item.get("orders_count", 0))
 		results[y] = count
 
-	process.crawl(ReiHistorySpider, years=years, cookies=cookies)
-	for crawler in process.crawlers:
-		crawler.signals.connect(collect, signal=crawler.signals.item_scraped)
-	process.start()  # runs to completion
+	crawler = process.create_crawler(ReiHistorySpider)
+	crawler.signals.connect(collect, signal=crawler.signals.item_scraped)
+	process.crawl(crawler, years=years, cookies=cookies)
+	process.start()
 	return results

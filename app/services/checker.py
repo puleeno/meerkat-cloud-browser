@@ -5,7 +5,6 @@ from typing import Dict, List
 import os
 
 from flask import current_app
-from playwright.sync_api import sync_playwright
 
 from ..extensions import db
 from ..models import Account, AccountYearStat
@@ -18,8 +17,23 @@ _worker_thread = None
 
 
 def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
+	try:
+		from playwright.sync_api import sync_playwright  # lazy import để tránh ImportError khi migrate/chưa cài
+	except ImportError:
+		# Chưa cài playwright
+		return []
+
 	with sync_playwright() as p:
-		browser = p.firefox.launch(headless=True)
+		# Đọc cấu hình hiển thị GUI từ ENV
+		headless_env = os.getenv("PLAYWRIGHT_HEADLESS")
+		if headless_env is None:
+			# Mặc định: development -> GUI (headless False), còn lại headless True
+			headless = os.getenv("FLASK_ENV", "").lower() != "development"
+		else:
+			headless = headless_env.lower() not in ("0", "false", "no")
+		slow_mo_ms = int(os.getenv("PLAYWRIGHT_SLOWMO_MS", "0") or 0)
+
+		browser = p.firefox.launch(headless=headless, slow_mo=slow_mo_ms)
 		context = browser.new_context()
 		page = context.new_page()
 
@@ -40,10 +54,7 @@ def _playwright_login_and_cookies(email: str, password: str) -> List[dict]:
 			try:
 				el = page.query_selector(sel)
 				if el:
-					if "password" in sel:
-						el.fill(val)
-					else:
-						el.fill(val)
+					el.fill(val)
 			except Exception:
 				pass
 
@@ -93,7 +104,7 @@ def _process_accounts(emails: List[str]) -> None:
 			total = 0
 			for year, count in (per_year or {}).items():
 				total += int(count)
-				stat = AccountYearStat.query_filter_by(account_id=account.id, year=year).one_or_none()
+				stat = AccountYearStat.query.filter_by(account_id=account.id, year=year).one_or_none()
 				if stat is None:
 					stat = AccountYearStat(account_id=account.id, year=year, orders_count=int(count))
 					db.session.add(stat)
