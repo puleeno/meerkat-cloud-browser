@@ -22,7 +22,7 @@ from ..extensions import db
 from ..models import Account, AccountYearStat
 from .session_store import save_cookies
 from .history_fetcher import fetch_orders_per_year_with_scrapy
-from .telegram_bot import send_message, send_photo
+from .telegram_bot import send_message, send_photo, send_photo_bytes
 
 
 _worker_lock = threading.Lock()
@@ -255,14 +255,19 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 				if btn.count() == 0:
 					btn = page.locator("#Logon button[type=submit]").first
 				# chụp ảnh trước khi submit
-				screens_dir = os.path.join("instance", "screens")
-				os.makedirs(screens_dir, exist_ok=True)
-				before_path = os.path.join(screens_dir, f"{_safe_key(email)}-before-submit-{int(time.time())}.png")
 				try:
-					page.screenshot(path=before_path, full_page=False)
-					send_photo(before_path, caption=f"Trước khi submit: {email}")
+					img_bytes = page.screenshot(full_page=False)
+					send_photo_bytes(img_bytes, caption=f"Trước khi submit: {email}", filename=f"{_safe_key(email)}-before-submit.png")
 				except Exception:
-					pass
+					# Fallback: lưu file nếu cần
+					screens_dir = os.path.join("instance", "screens")
+					os.makedirs(screens_dir, exist_ok=True)
+					before_path = os.path.join(screens_dir, f"{_safe_key(email)}-before-submit-{int(time.time())}.png")
+					try:
+						page.screenshot(path=before_path, full_page=False)
+						send_photo(before_path, caption=f"Trước khi submit: {email}")
+					except Exception:
+						pass
 				btn.click()
 
 				try:
@@ -284,12 +289,18 @@ def _playwright_login_and_cookies(email: str, password: str) -> tuple[list[dict]
 				cookies = context.cookies()
 
 				# chụp ảnh sau khi login
-				after_path = os.path.join(screens_dir, f"{_safe_key(email)}-after-login-{int(time.time())}.png")
 				try:
-					page.screenshot(path=after_path, full_page=False)
-					send_photo(after_path, caption=f"Sau khi login: {email}")
+					img2 = page.screenshot(full_page=False)
+					send_photo_bytes(img2, caption=f"Sau khi login: {email}", filename=f"{_safe_key(email)}-after-login.png")
 				except Exception:
-					pass
+					try:
+						screens_dir = os.path.join("instance", "screens")
+						os.makedirs(screens_dir, exist_ok=True)
+						after_path = os.path.join(screens_dir, f"{_safe_key(email)}-after-login-{int(time.time())}.png")
+						page.screenshot(path=after_path, full_page=False)
+						send_photo(after_path, caption=f"Sau khi login: {email}")
+					except Exception:
+						pass
 
 				# build final headers from seen + our known values
 				final_headers: Dict[str, str] = {

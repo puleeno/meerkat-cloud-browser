@@ -51,3 +51,18 @@ def send_photo(photo_path: str, caption: Optional[str] = None) -> None:
 				os.remove(photo_path)
 		except Exception:
 			pass
+
+
+def send_photo_bytes(content: bytes, caption: Optional[str] = None, filename: str = "screenshot.png") -> None:
+	"""Gửi ảnh trực tiếp từ bytes, tránh lưu/xóa file tạm."""
+	if not _enabled():
+		return
+	try:
+		requests.post(
+			f"{_base_url()}/sendPhoto",
+			data={"chat_id": os.getenv("TELEGRAM_CHAT_ID"), "caption": caption or ""},
+			files={"photo": (filename, content, "image/png")},
+			timeout=30,
+		)
+	except Exception:
+		pass

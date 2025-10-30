@@ -62,7 +62,8 @@ def upload_accounts():
 			created += 1
 		else:
 			acc.password = password
-		acc.can_login = False
+		# Để can_login = NULL (chưa kiểm tra)
+		acc.can_login = None
 		acc.total_orders = 0
 		acc.last_checked_at = None
 	db.session.commit()
@@ -74,10 +75,11 @@ def upload_accounts():
 @admin_bp.post("/run-all")
 def run_all():
 	from .services.checker import enqueue_accounts_check
-	emails = [a.email for a in Account.query.all()]
+	# Chỉ chạy các tài khoản chưa kiểm tra (can_login IS NULL)
+	emails = [a.email for a in Account.query.filter(Account.can_login.is_(None)).all()]
 	if not emails:
-		flash("Chưa có tài khoản nào để chạy.", "warning")
+		flash("Không có tài khoản nào cần chạy (tất cả đã được kiểm tra).", "info")
 		return redirect(url_for("admin.dashboard"))
 	enqueue_accounts_check(emails)
-	flash(f"Đã xếp batch cho {len(emails)} tài khoản.", "success")
+	flash(f"Đã xếp batch cho {len(emails)} tài khoản (chưa kiểm tra).", "success")
 	return redirect(url_for("admin.dashboard"))
